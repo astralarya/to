@@ -20,7 +20,6 @@ TO_ECHO=echo
 TO_CAT=cat
 TO_PWD=pwd
 TO_SED=sed
-TO_GREP=grep
 
 to() {
 if [ "$1" ]
@@ -75,7 +74,7 @@ _to() {
 local cur=${COMP_WORDS[COMP_CWORD]}
 if [ -a $TO_BOOKMARK_FILE ]
 then
- COMPREPLY=( $(compgen -W "$($TO_GREP \> $TO_BOOKMARK_FILE | cut -c 2-)" -- $cur) )
+ COMPREPLY=( $(compgen -W "$($TO_SED -n 's/>\(.*\)/\1/p' $TO_BOOKMARK_FILE)" -- $cur) )
 fi
 }
 complete -F _to to

@@ -44,7 +44,6 @@ bash
 echo
 cat
 pwd
-grep
 sed
 
 License
