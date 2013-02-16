@@ -17,15 +17,18 @@ then
  then
   if [ "$2" ]
   then
+   # add bookmark
    _to_rm "$2"
    $TO_ECHO \>"$2" >> $TO_BOOKMARK_FILE
    $TO_PWD >> $TO_BOOKMARK_FILE
   fi
  elif [ "$1" = "-r" ]
  then
+  # remove bookmark
   _to_rm "$2"
  elif [ -a $TO_BOOKMARK_FILE ]
  then
+  # go to bookmark if found
   local TODIR=$($TO_GREP \>$1 $TO_BOOKMARK_FILE -A 1 -x | $TO_GREP -v \>$1)
   if [ "$TODIR" ]
   then
@@ -38,9 +41,12 @@ then
  fi
 elif [ -a $TO_BOOKMARK_FILE ]
 then
+ # show bookmarks
  $TO_CAT $TO_BOOKMARK_FILE
 fi
 }
+
+# remove bookmark
 _to_rm() {
 if [ -a $TO_BOOKMARK_FILE ]
 then
@@ -52,6 +58,8 @@ then
  fi
 fi
 }
+
+# tab completion
 _to() {
 local cur=${COMP_WORDS[COMP_CWORD]}
 if [ -a $TO_BOOKMARK_FILE ]
