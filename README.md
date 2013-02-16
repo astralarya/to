@@ -1,15 +1,20 @@
 to
 ==
 
-A simple bash script for bookmarking file system locations with tab completion
+Writen by Mara Kim
+
+A simple script for bookmarking file system locations in bash with tab completion
+
 
 Installation
 ============
 
 source to.sh in your .bashrc
 
+
 Usage
 =====
+
 to [OPTION] [BOOKMARK]
 
 Options
