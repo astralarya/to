@@ -65,8 +65,7 @@ then
  local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
  if [ "$TODIR" ]
  then
-  $TO_SED /^\>$1\$/,+1d $TO_BOOKMARK_FILE > $TO_BOOKMARK_FILE~
-  mv $TO_BOOKMARK_FILE~ $TO_BOOKMARK_FILE
+  $TO_SED -i /^\>$1\$/,+1d $TO_BOOKMARK_FILE
  fi
 fi
 }
