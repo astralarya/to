@@ -47,8 +47,8 @@ pwd
 grep
 sed
 
-Liscense
-========
+License
+=======
 
 Copyright (C) 2013  Mara Kim
 
