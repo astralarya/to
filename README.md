@@ -46,7 +46,6 @@ cat
 pwd
 grep
 sed
-less
 
 Liscense
 ========
