@@ -19,8 +19,8 @@ TO_BOOKMARK_FILE=~/.bookmarks
 TO_ECHO=echo
 TO_CAT=cat
 TO_PWD=pwd
-TO_GREP=grep
 TO_SED=sed
+TO_GREP=grep
 
 to() {
 if [ "$1" ]
@@ -41,7 +41,7 @@ then
  elif [ -a $TO_BOOKMARK_FILE ]
  then
   # go to bookmark if found
-  local TODIR=$($TO_GREP \>$1 $TO_BOOKMARK_FILE -A 1 -x | $TO_GREP -v \>$1)
+  local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
   if [ "$TODIR" ]
   then
    cd $TODIR
@@ -62,7 +62,7 @@ fi
 _to_rm() {
 if [ -a $TO_BOOKMARK_FILE ]
 then
- local TODIR=$($TO_GREP \>$1 $TO_BOOKMARK_FILE -A 1 -x | $TO_GREP -v \>$1)
+ local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
  if [ "$TODIR" ]
  then
   $TO_SED /^\>$1\$/,+1d $TO_BOOKMARK_FILE > $TO_BOOKMARK_FILE~
