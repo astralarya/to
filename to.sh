@@ -18,11 +18,11 @@
 
 
 TO_BOOKMARK_FILE=~/.bookmarks
-TO_ECHO=echo
-TO_CAT=cat
-TO_PWD=pwd
-TO_BASENAME=basename
-TO_SED=sed
+TO_ECHO=`which echo`
+TO_CAT=`which cat`
+TO_PWD=`which pwd`
+TO_BASENAME=`which basename`
+TO_SED=`which sed`
 
 function to {
     if [ "$1" ]
@@ -33,7 +33,7 @@ function to {
             then
                 if expr "$2" : ".*/.*"
                 then
-                    echo "bookmark name may not contain forward slashes" >&2
+                    "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
                     return 1
                 fi
                 # add bookmark
