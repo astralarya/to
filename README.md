@@ -48,7 +48,7 @@ sed
 License
 =======
 
-Copyright (C) 2013  Mara Kim
+Copyright (C) 2013  Mara Kim, Max Thrun
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
