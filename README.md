@@ -33,8 +33,7 @@ $ to -d foo
 
 You can also manually edit the $TO_BOOKMARKS file (defined in to.sh, default ~/.bookmarks)
 The syntax is:
->\>bookmarkname <br />
->/path/to/bookmark
+>bookmarkname|/path/to/bookmark
 
 
 Dependencies
