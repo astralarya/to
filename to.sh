@@ -60,11 +60,7 @@ fi
 _to_rm() {
 if [ -a $TO_BOOKMARK_FILE ]
 then
- local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
- if [ "$TODIR" ]
- then
-  $TO_SED -i /^\>$1\$/,+1d $TO_BOOKMARK_FILE
- fi
+  $TO_SED -ri "/^$1\|.*/ d" $TO_BOOKMARK_FILE
 fi
 }
 
