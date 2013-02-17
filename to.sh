@@ -43,7 +43,7 @@ then
   local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
   if [ "$TODIR" ]
   then
-   cd $TODIR
+   cd "$TODIR"
   else
    $TO_ECHO "No shortcut:" "$1"
   fi
