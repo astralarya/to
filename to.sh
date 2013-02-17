@@ -113,8 +113,11 @@ local bookmark="$(_to_path_head "$cur")"
 local todir="$( _to_dir "$bookmark")"
 if [ "$prev" = "-b" -o "$prev" = "-r" ]
 then
- # add current directory
- COMPREPLY="$("$TO_BASENAME" "$($TO_PWD)" )"
+ if [ "$prev" = "-b" ]
+ then
+  # add current directory
+  COMPREPLY="$("$TO_BASENAME" "$($TO_PWD)" )"
+ fi
  if [ -e "$TO_BOOKMARK_FILE" ]
  then
   # get bookmarks
