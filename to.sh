@@ -52,7 +52,6 @@ then
   local todir="$(_to_dir "$bookmark")"
   if [ "$todir" ]
   then
-   echo $(_to_reldir $1)
    cd $(_to_reldir $1)
   else
    "$TO_ECHO" "No shortcut:" "$bookmark"
