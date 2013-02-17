@@ -52,12 +52,12 @@ then
   local todir="$(_to_dir "$bookmark")"
   if [ "$todir" ]
   then
-   cd $(_to_reldir $1)
+   cd "$(_to_reldir "$1")"
   else
-   "$TO_ECHO" "No shortcut:" "$bookmark"
+   "$TO_ECHO" "No shortcut: $bookmark"
   fi
  else
-   "$TO_ECHO" "No shortcut:" "$bookmark"
+   "$TO_ECHO" "No shortcut: $bookmark"
  fi
 elif [ -e "$TO_BOOKMARK_FILE" ]
 then
@@ -83,7 +83,7 @@ function _to_path_tail {
 
 # get the expanded path of a bookmark/path
 function _to_reldir {
-local todir="$(_to_dir $(_to_path_head "$1") )"
+local todir="$(_to_dir "$(_to_path_head "$1")" )"
 if [ "$todir" = "/" ]
 then
  # special case for root dir
