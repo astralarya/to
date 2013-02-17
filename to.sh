@@ -18,11 +18,11 @@
 
 
 TO_BOOKMARK_FILE=~/.bookmarks
-TO_ECHO=echo
-TO_CAT=cat
-TO_PWD=pwd
-TO_BASENAME=basename
-TO_SED=sed
+TO_ECHO=\echo
+TO_CAT=\cat
+TO_PWD=\pwd
+TO_BASENAME=\basename
+TO_SED=\sed
 
 function to {
     if [ "$1" ]
