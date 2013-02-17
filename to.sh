@@ -16,10 +16,10 @@
 
 
 TO_BOOKMARK_FILE=~/.bookmarks
-TO_ECHO=echo
-TO_CAT=cat
-TO_PWD=pwd
-TO_SED=sed
+TO_ECHO=`which echo`
+TO_CAT=`which cat`
+TO_PWD=`which pwd`
+TO_SED=`which sed`
 
 to() {
 if [ "$1" ]
