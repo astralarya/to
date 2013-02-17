@@ -49,10 +49,11 @@ then
   # go to bookmark if found
   local bookmark="$(_to_path_head "$1")"
   local extra="$(_to_path_tail "$1")"
-  local TODIR="$(_to_dir "$bookmark")"
-  if [ "$TODIR" ]
+  local todir="$(_to_dir "$bookmark")"
+  if [ "$todir" ]
   then
-   cd "$TODIR/$extra"
+   echo $(_to_reldir $1)
+   cd $(_to_reldir $1)
   else
    "$TO_ECHO" "No shortcut:" "$bookmark"
   fi
@@ -78,6 +79,10 @@ function _to_path_tail {
 "$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
 }
 
+function _to_reldir {
+"$TO_ECHO" "$(_to_dir $(_to_path_head "$1"))$(_to_path_tail "$1")"
+}
+
 # remove bookmark
 function _to_rm {
 if [ -e "$TO_BOOKMARK_FILE" ]
@@ -88,7 +93,7 @@ fi
 
 # clean input for sed search
 function _to_regex {
-if [ "$1" = "/"
+if [ "$1" = "/" ]
 then
  # special case for root dir
  echo
@@ -106,20 +111,19 @@ local todir="$( _to_dir "$bookmark")"
 if [ -e "$TO_BOOKMARK_FILE" ]
 then
  # get bookmarks
- COMPREPLY=$("$TO_SED" -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE")
+ COMPREPLY=$("$TO_SED" -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE")
  if [ "$prev" = "-b" ]
  then
   # add current directory
-  COMPREPLY="$("$TO_BASENAME" $($TO_PWD) ) $COMPREPLY"
+  COMPREPLY="$("$TO_BASENAME" "$($TO_PWD)" ) $COMPREPLY"
  elif [ "$todir" ]
  then
-  # add subdirectories if needed
-  local extra="$(_to_path_tail "$cur")"
-  local subdir=( $(compgen -d "$todir/$extra" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/") )
-  COMPREPLY=($subdir $COMPREPLY)
+  # add subdirectories
+  local subdir="$(compgen -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/")"
+  COMPREPLY="$subdir $COMPREPLY"
  fi
  # generate reply
- COMPREPLY=( $(compgen -W "$COMPREPLY" -- "$bookmark") )
+ COMPREPLY=( $(compgen -W "$COMPREPLY" -- "$cur") )
 fi
 }
 
@@ -134,5 +138,5 @@ fi
 if [ "$ZSH_VERSION" ]; then
  compctl -K _to_zsh to
 else
- complete -F _to to
+ complete -o nospace -F _to to
 fi
