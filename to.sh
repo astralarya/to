@@ -4,14 +4,16 @@
 # Copyright (C) 2013 Mara Kim
 #
 # This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software 
-# Foundation, either version 3 of the License, or (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-# PARTICULAR PURPOSE. See the GNU General Public License for more details.
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
 #
-# You should have received a copy of the GNU General Public License along with 
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
 # this program. If not, see http://www.gnu.org/licenses/.
 
 
@@ -21,7 +23,7 @@ TO_CAT=cat
 TO_PWD=pwd
 TO_SED=sed
 
-to() {
+function to {
 if [ "$1" ]
 then
  if [ "$1" = "-b" ]
@@ -30,27 +32,26 @@ then
   then
    # add bookmark
    _to_rm "$2"
-   $TO_ECHO \>"$2" >> $TO_BOOKMARK_FILE
-   $TO_PWD >> $TO_BOOKMARK_FILE
+   $TO_ECHO $2\|`$TO_PWD` >> $TO_BOOKMARK_FILE
   fi
  elif [ "$1" = "-r" ]
  then
   # remove bookmark
   _to_rm "$2"
- elif [ -a $TO_BOOKMARK_FILE ]
+ elif [ -e $TO_BOOKMARK_FILE ]
  then
   # go to bookmark if found
-  local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
+  local TODIR="$($TO_SED -rn "s/^$1\|(.*)/\1/p" $TO_BOOKMARK_FILE)"
   if [ "$TODIR" ]
   then
-   cd $TODIR
+   cd "$TODIR"
   else
    $TO_ECHO "No shortcut:" "$1"
   fi
  else
    $TO_ECHO "No shortcut:" "$1"
  fi
-elif [ -a $TO_BOOKMARK_FILE ]
+elif [ -e $TO_BOOKMARK_FILE ]
 then
  # show bookmarks
  $TO_CAT $TO_BOOKMARK_FILE
@@ -58,23 +59,32 @@ fi
 }
 
 # remove bookmark
-_to_rm() {
-if [ -a $TO_BOOKMARK_FILE ]
+function _to_rm {
+if [ -e $TO_BOOKMARK_FILE ]
 then
- local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
- if [ "$TODIR" ]
- then
-  $TO_SED -i /^\>$1\$/,+1d $TO_BOOKMARK_FILE
- fi
+  $TO_SED -ri "/^$1\|.*/ d" $TO_BOOKMARK_FILE
 fi
 }
 
-# tab completion
-_to() {
+# tab completion bash
+function _to {
 local cur=${COMP_WORDS[COMP_CWORD]}
-if [ -a $TO_BOOKMARK_FILE ]
+if [ -e $TO_BOOKMARK_FILE ]
 then
- COMPREPLY=( $(compgen -W "$($TO_SED -n 's/>\(.*\)/\1/p' $TO_BOOKMARK_FILE)" -- $cur) )
+ COMPREPLY=( $(compgen -W "$($TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE)" -- $cur) )
 fi
 }
-complete -F _to to
+
+# tab completion zsh
+function _to_zsh {
+if [ -e $TO_BOOKMARK_FILE ]
+then
+ reply=(`$TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE`)
+fi
+}
+
+if [ $ZSH_VERSION ]; then
+ compctl -K _to_zsh to
+else
+ complete -F _to to
+fi
