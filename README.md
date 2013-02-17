@@ -1,12 +1,12 @@
 to
 ==
 
-to - A simple script for bookmarking file system locations in bash with tab completion
+to - A simple script for bookmarking file system locations in bash & zsh with tab completion
 
 Installation
 ============
 
-source to.sh in your .bashrc
+source to.sh in your .bashrc or .zshrc
 
 
 Usage
@@ -40,7 +40,7 @@ The syntax is:
 Dependencies
 ============
 
-bash
+bash or zsh
 echo
 cat
 pwd
