@@ -30,8 +30,7 @@ then
   then
    # add bookmark
    _to_rm "$2"
-   $TO_ECHO \>"$2" >> $TO_BOOKMARK_FILE
-   $TO_PWD >> $TO_BOOKMARK_FILE
+   $TO_ECHO $2\|`$TO_PWD` >> $TO_BOOKMARK_FILE
   fi
  elif [ "$1" = "-r" ]
  then
@@ -40,7 +39,7 @@ then
  elif [ -a $TO_BOOKMARK_FILE ]
  then
   # go to bookmark if found
-  local TODIR=$($TO_SED -n /^\>$1\$/\{n\;p\;\} $TO_BOOKMARK_FILE)
+  local TODIR=$($TO_SED -rn "s/^$1\|(.*)/\1/p" $TO_BOOKMARK_FILE)
   if [ "$TODIR" ]
   then
    cd "$TODIR"
@@ -74,7 +73,7 @@ _to() {
 local cur=${COMP_WORDS[COMP_CWORD]}
 if [ -a $TO_BOOKMARK_FILE ]
 then
- COMPREPLY=( $(compgen -W "$($TO_SED -n 's/>\(.*\)/\1/p' $TO_BOOKMARK_FILE)" -- $cur) )
+ COMPREPLY=( $(compgen -W "$($TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE)" -- $cur) )
 fi
 }
 complete -F _to to
