@@ -23,7 +23,7 @@ TO_CAT=`which cat`
 TO_PWD=`which pwd`
 TO_SED=`which sed`
 
-to() {
+function to {
 if [ "$1" ]
 then
  if [ "$1" = "-b" ]
@@ -59,19 +59,32 @@ fi
 }
 
 # remove bookmark
-_to_rm() {
+function _to_rm {
 if [ -e $TO_BOOKMARK_FILE ]
 then
   $TO_SED -ri "/^$1\|.*/ d" $TO_BOOKMARK_FILE
 fi
 }
 
-# tab completion
-_to() {
+# tab completion bash
+function _to {
 local cur=${COMP_WORDS[COMP_CWORD]}
 if [ -e $TO_BOOKMARK_FILE ]
 then
  COMPREPLY=( $(compgen -W "$($TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE)" -- $cur) )
 fi
 }
-complete -F _to to
+
+# tab completion zsh
+function _to_zsh {
+if [ -e $TO_BOOKMARK_FILE ]
+then
+ reply=(`$TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE`)
+fi
+}
+
+if [ $ZSH_VERSION ]; then
+ compctl -K _to_zsh to
+else
+ complete -F _to to
+fi
