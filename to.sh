@@ -83,7 +83,14 @@ function _to_path_tail {
 
 # get the expanded path of a bookmark/path
 function _to_reldir {
-"$TO_ECHO" "$(_to_dir $(_to_path_head "$1"))$(_to_path_tail "$1")"
+local todir="$(_to_dir $(_to_path_head "$1") )"
+if [ "$todir" = "/" ]
+then
+ # special case for root dir
+ "$TO_ECHO" "$(_to_path_tail "$1")"
+else
+ "$TO_ECHO" "$todir$(_to_path_tail "$1")"
+fi
 }
 
 # remove bookmark
@@ -96,13 +103,7 @@ fi
 
 # clean input for sed search
 function _to_regex {
-if [ "$1" = "/" ]
-then
- # special case for root dir
- echo
-else
  "$TO_ECHO" $1 | "$TO_SED" -e 's/[\/&]/\\&/g'
-fi
 }
 
 # tab completion bash
