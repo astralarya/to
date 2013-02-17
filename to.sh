@@ -30,6 +30,11 @@ then
  then
   if [ "$2" ]
   then
+   if expr "$2" : ".*/.*"
+   then
+    echo "bookmark name may not contain forward slashes" >&2
+    return 1
+   fi
    # add bookmark
    _to_rm "$2"
    $TO_ECHO $2\|`$TO_PWD` >> $TO_BOOKMARK_FILE
@@ -41,15 +46,17 @@ then
  elif [ -e $TO_BOOKMARK_FILE ]
  then
   # go to bookmark if found
-  local TODIR="$($TO_SED -rn "s/^$1\|(.*)/\1/p" $TO_BOOKMARK_FILE)"
+  local bookmark="$("$TO_SED" -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1")"
+  local extra="$("$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1")"
+  local TODIR="$("$TO_SED" -rn "s/^$bookmark\|(.*)/\1/p" "$TO_BOOKMARK_FILE")"
   if [ "$TODIR" ]
   then
-   cd "$TODIR"
+   cd "$TODIR/$extra"
   else
-   $TO_ECHO "No shortcut:" "$1"
+   "$TO_ECHO" "No shortcut:" "$bookmark"
   fi
  else
-   $TO_ECHO "No shortcut:" "$1"
+   "$TO_ECHO" "No shortcut:" "$bookmark"
  fi
 elif [ -e $TO_BOOKMARK_FILE ]
 then
