@@ -16,7 +16,7 @@ to [OPTION] [BOOKMARK]
 
 Options
 * -b	Add a new bookmark for current directory (overwrites any current bookmark)
-* -d	Delete bookmark
+* -r	Remove bookmark
 
 $ to
 >print all bookmarks
@@ -24,32 +24,35 @@ $ to
 $ to foo
 >go to the foo bookmark (if exists)
 
+$ to foo/bar
+>go to the directory bar in the directory foo points to (if exists)
+
 $ to -b foo
 >set the foo bookmark to the current directory
 
-$ to -d foo
->delete the foo bookmark
+$ to -r foo
+>remove the foo bookmark
 
 
 You can also manually edit the $TO_BOOKMARKS file (defined in to.sh, default ~/.bookmarks)
 The syntax is:
->\>bookmarkname <br />
->/path/to/bookmark
+>bookmarkname|/path/to/bookmark
 
 
 Dependencies
 ============
 
-bash or zsh
-echo
-cat
-pwd
-sed
+* bash or zsh
+* echo
+* cat
+* pwd
+* basename
+* sed
 
 License
 =======
 
-Copyright (C) 2013  Mara Kim
+Copyright (C) 2013  Mara Kim, Philipp Adolf, Max Thrun
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
