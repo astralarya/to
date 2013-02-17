@@ -47,8 +47,8 @@ then
  elif [ -e "$TO_BOOKMARK_FILE" ]
  then
   # go to bookmark if found
-  local bookmark="$("$TO_SED" -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1")"
-  local extra="$("$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1")"
+  local bookmark="$(_to_path_head "$1")"
+  local extra="$(_to_path_tail "$1")"
   local TODIR="$(_to_dir "$bookmark")"
   if [ "$TODIR" ]
   then
@@ -68,6 +68,14 @@ fi
 
 function _to_dir {
 "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
+}
+
+function _to_path_head {
+"$TO_SED" -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
+}
+
+function _to_path_tail {
+"$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
 }
 
 # remove bookmark
