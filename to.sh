@@ -21,6 +21,7 @@ TO_BOOKMARK_FILE=~/.bookmarks
 TO_ECHO=echo
 TO_CAT=cat
 TO_PWD=pwd
+TO_BASENAME=basename
 TO_SED=sed
 
 function to {
@@ -69,9 +70,18 @@ fi
 # tab completion bash
 function _to {
 local cur=${COMP_WORDS[COMP_CWORD]}
+local prev=${COMP_WORDS[COMP_CWORD-1]}
 if [ -e $TO_BOOKMARK_FILE ]
 then
- COMPREPLY=( $(compgen -W "$($TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE)" -- $cur) )
+ # get bookmarks
+ COMPREPLY="$($TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE)"
+ if [ "$prev" = "-b" ]
+ then
+  # add current directory
+  COMPREPLY="$($TO_BASENAME $($TO_PWD) ) $COMPREPLY"
+ fi
+ # generate reply
+ COMPREPLY=( $(compgen -W "$COMPREPLY" -- $cur ) )
 fi
 }
 
