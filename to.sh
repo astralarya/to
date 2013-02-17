@@ -41,7 +41,7 @@ then
  elif [ -e $TO_BOOKMARK_FILE ]
  then
   # go to bookmark if found
-  local TODIR=$($TO_SED -rn "s/^$1\|(.*)/\1/p" $TO_BOOKMARK_FILE)
+  local TODIR="$($TO_SED -rn "s/^$1\|(.*)/\1/p" $TO_BOOKMARK_FILE)"
   if [ "$TODIR" ]
   then
    cd "$TODIR"
