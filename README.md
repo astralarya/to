@@ -31,7 +31,7 @@ $ to -b foo
 >set the foo bookmark to the current directory
 
 $ to -r foo
->delete the foo bookmark
+>remove the foo bookmark
 
 
 You can also manually edit the $TO_BOOKMARKS file (defined in to.sh, default ~/.bookmarks)
