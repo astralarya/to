@@ -24,6 +24,9 @@ $ to
 $ to foo
 >go to the foo bookmark (if exists)
 
+$ to foo/bar
+>go to the directory bar in the directory foo points to (if exists)
+
 $ to -b foo
 >set the foo bookmark to the current directory
 
