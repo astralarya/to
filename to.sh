@@ -86,10 +86,23 @@ then
 fi
 }
 
+# clean input for sed search
+function _to_regex {
+if [ "$1" = "/"
+then
+ # special case for root dir
+ echo
+else
+ "$TO_ECHO" $1 | "$TO_SED" -e 's/[\/&]/\\&/g'
+fi
+}
+
 # tab completion bash
 function _to {
 local cur="${COMP_WORDS[COMP_CWORD]}"
 local prev="${COMP_WORDS[COMP_CWORD-1]}"
+local bookmark="$(_to_path_head "$cur")"
+local todir="$( _to_dir "$bookmark")"
 if [ -e "$TO_BOOKMARK_FILE" ]
 then
  # get bookmarks
@@ -98,9 +111,15 @@ then
  then
   # add current directory
   COMPREPLY="$("$TO_BASENAME" $($TO_PWD) ) $COMPREPLY"
+ elif [ "$todir" ]
+ then
+  # add subdirectories if needed
+  local extra="$(_to_path_tail "$cur")"
+  local subdir=( $(compgen -d "$todir/$extra" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/") )
+  COMPREPLY=($subdir $COMPREPLY)
  fi
  # generate reply
- COMPREPLY=( $(compgen -W "$COMPREPLY" -- "$cur" ) )
+ COMPREPLY=( $(compgen -W "$COMPREPLY" -- "$bookmark") )
 fi
 }
 
