@@ -111,23 +111,29 @@ local cur="${COMP_WORDS[COMP_CWORD]}"
 local prev="${COMP_WORDS[COMP_CWORD-1]}"
 local bookmark="$(_to_path_head "$cur")"
 local todir="$( _to_dir "$bookmark")"
-if [ -e "$TO_BOOKMARK_FILE" ]
+if [ "$prev" = "-b" -o "$prev" = "-r" ]
 then
- # get bookmarks
- COMPREPLY=$("$TO_SED" -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE")
- if [ "$prev" = "-b" ]
+ # add current directory
+ COMPREPLY="$("$TO_BASENAME" "$($TO_PWD)" )"
+ if [ -e "$TO_BOOKMARK_FILE" ]
  then
-  # add current directory
-  COMPREPLY="$("$TO_BASENAME" "$($TO_PWD)" ) $COMPREPLY"
- elif [ "$todir" ]
+  # get bookmarks
+  COMPREPLY="$("$TO_SED" -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $COMPREPLY"
+
+ fi
+elif [ -e "$TO_BOOKMARK_FILE" ]
+then
+ # get bookmarks (with slash)
+ COMPREPLY=$("$TO_SED" -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE")
+ if [ "$todir" ]
  then
   # add subdirectories
   local subdir="$(compgen -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/")"
   COMPREPLY="$subdir $COMPREPLY"
  fi
- # generate reply
- COMPREPLY=( $(compgen -W "$COMPREPLY" -- "$cur") )
 fi
+# generate reply
+COMPREPLY=( $(compgen -W "$COMPREPLY" -- "$cur") )
 }
 
 # tab completion zsh

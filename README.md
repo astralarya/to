@@ -16,7 +16,7 @@ to [OPTION] [BOOKMARK]
 
 Options
 * -b	Add a new bookmark for current directory (overwrites any current bookmark)
-* -d	Delete bookmark
+* -r	Remove bookmark
 
 $ to
 >print all bookmarks
@@ -30,7 +30,7 @@ $ to foo/bar
 $ to -b foo
 >set the foo bookmark to the current directory
 
-$ to -d foo
+$ to -r foo
 >delete the foo bookmark
 
 
