@@ -103,7 +103,13 @@ fi
 
 # clean input for sed search
 function _to_regex {
+if [ "$1" = "/" ]
+then
+ # special case for root dir
+ "$TO_ECHO"
+else
  "$TO_ECHO" $1 | "$TO_SED" -e 's/[\/&]/\\&/g'
+fi
 }
 
 # tab completion bash
