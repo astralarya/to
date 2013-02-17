@@ -42,11 +42,12 @@ The syntax is:
 Dependencies
 ============
 
-bash or zsh
-echo
-cat
-pwd
-sed
+* bash or zsh
+* echo
+* cat
+* pwd
+* basename
+* sed
 
 License
 =======
