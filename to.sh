@@ -66,18 +66,22 @@ then
 fi
 }
 
+# get the directory referred to by a bookmark
 function _to_dir {
 "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
+# get the first part of the path
 function _to_path_head {
 "$TO_SED" -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
 }
 
+# get the rest of the path
 function _to_path_tail {
 "$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
 }
 
+# get the expanded path of a bookmark/path
 function _to_reldir {
 "$TO_ECHO" "$(_to_dir $(_to_path_head "$1"))$(_to_path_tail "$1")"
 }
