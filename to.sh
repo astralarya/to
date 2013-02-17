@@ -36,7 +36,7 @@ then
  then
   # remove bookmark
   _to_rm "$2"
- elif [ -a $TO_BOOKMARK_FILE ]
+ elif [ -e $TO_BOOKMARK_FILE ]
  then
   # go to bookmark if found
   local TODIR=$($TO_SED -rn "s/^$1\|(.*)/\1/p" $TO_BOOKMARK_FILE)
@@ -49,7 +49,7 @@ then
  else
    $TO_ECHO "No shortcut:" "$1"
  fi
-elif [ -a $TO_BOOKMARK_FILE ]
+elif [ -e $TO_BOOKMARK_FILE ]
 then
  # show bookmarks
  $TO_CAT $TO_BOOKMARK_FILE
@@ -58,7 +58,7 @@ fi
 
 # remove bookmark
 _to_rm() {
-if [ -a $TO_BOOKMARK_FILE ]
+if [ -e $TO_BOOKMARK_FILE ]
 then
   $TO_SED -ri "/^$1\|.*/ d" $TO_BOOKMARK_FILE
 fi
@@ -67,7 +67,7 @@ fi
 # tab completion
 _to() {
 local cur=${COMP_WORDS[COMP_CWORD]}
-if [ -a $TO_BOOKMARK_FILE ]
+if [ -e $TO_BOOKMARK_FILE ]
 then
  COMPREPLY=( $(compgen -W "$($TO_SED -rn "s/(.*)\|.*/\1/p" $TO_BOOKMARK_FILE)" -- $cur) )
 fi
