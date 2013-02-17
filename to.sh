@@ -49,7 +49,7 @@ then
   # go to bookmark if found
   local bookmark="$("$TO_SED" -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1")"
   local extra="$("$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1")"
-  local TODIR="$("$TO_SED" -rn "s/^$bookmark\|(.*)/\1/p" "$TO_BOOKMARK_FILE")"
+  local TODIR="$(_to_dir "$bookmark")"
   if [ "$TODIR" ]
   then
    cd "$TODIR/$extra"
@@ -64,6 +64,10 @@ then
  # show bookmarks
  "$TO_CAT" "$TO_BOOKMARK_FILE"
 fi
+}
+
+function _to_dir {
+"$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # remove bookmark
