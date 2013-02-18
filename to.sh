@@ -172,6 +172,7 @@ function _to_zsh {
 
 # setup tab completion
 if [ "$ZSH_VERSION" ]; then
+    \compinit # TODO test if this works
     \bashcompinit # TODO test if this works
     $TO_COMPLETE -o filenames -o nospace -F _to_zsh to
 else
