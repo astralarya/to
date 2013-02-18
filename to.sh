@@ -174,7 +174,7 @@ function _to_zsh {
 if [ "$ZSH_VERSION" ]; then
     \compinit # TODO test if this works
     \bashcompinit # TODO test if this works
-    $TO_COMPLETE -o filenames -o nospace -F _to_zsh to
+    "$TO_COMPLETE" -o filenames -o nospace -F _to_zsh to
 else
-    $TO_COMPLETE -o filenames -o nospace -F _to_bash to
+    "$TO_COMPLETE" -o filenames -o nospace -F _to_bash to
 fi
