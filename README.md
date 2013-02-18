@@ -3,6 +3,8 @@ to
 
 to - A simple script for bookmarking file system locations in bash & zsh with tab completion
 
+*_(this fork works on OSX)_*
+
 Installation
 ============
 
