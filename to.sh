@@ -28,6 +28,12 @@ TO_COMPGEN=\compgen
 TO_COMPLETE=\complete 
 
 function to {
+    # create empty bookmarks file if it does not exist
+    if [ ! -e "$TO_BOOKMARK_FILE" ]
+    then
+        "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
+    fi
+
     if [ "$1" ]
     then
         if [ "$1" = "-b" ]
@@ -64,8 +70,7 @@ function to {
                 "$TO_ECHO" "No shortcut: $bookmark"
             fi
         fi
-    elif [ -e "$TO_BOOKMARK_FILE" ]
-    then
+    else
         # show bookmarks
         "$TO_CAT" "$TO_BOOKMARK_FILE"
     fi
@@ -73,10 +78,7 @@ function to {
 
 # get the directory referred to by a bookmark
 function _to_dir {
-    if [ -e "$TO_BOOKMARK_FILE" ]
-    then
-        "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
-    fi
+    "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the first part of the path
@@ -103,10 +105,7 @@ function _to_reldir {
 
 # remove bookmark
 function _to_rm {
-    if [ -e "$TO_BOOKMARK_FILE" ]
-    then
-        "$TO_SED" -ri "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
-    fi
+    "$TO_SED" -ri "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
 }
 
 # clean input for sed search
@@ -124,6 +123,11 @@ function _to_regex {
 # $1 = COMP_WORDS (words in buffer)
 # $2 = COMP_CWORDS (index to current word)
 function _to {
+    # create empty bookmarks file if it does not exist
+    if [ ! -e "$TO_BOOKMARK_FILE" ]
+    then
+        "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
+    fi
     # get parameters
     declare -a comp_words=("${!1}")
     local comp_cword=$2
@@ -146,8 +150,7 @@ function _to {
             # get bookmarks
             compreply="$("$TO_SED" -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
         fi
-    elif [ -e "$TO_BOOKMARK_FILE" ]
-    then
+    else
         if [ "$todir" ]
         then
             # add subdirectories
