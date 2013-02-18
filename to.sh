@@ -32,7 +32,7 @@ function to {
         then
             if [ "$2" ]
             then
-                if expr "$2" : ".*/.*"
+                if [ $(expr "$2" : ".*/.*") != 0 ]
                 then
                     echo "bookmark name may not contain forward slashes" >&2
                     return 1
