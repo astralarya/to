@@ -150,7 +150,7 @@ function _to {
         if [ "$todir" ]
         then
             # add subdirectories
-            compreply="$($TO_COMPGEN -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/")"
+            compreply="$($TO_COMPGEN -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/") $compreply"
         else
             # get bookmarks (with slash)
             compreply="$($TO_SED -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
