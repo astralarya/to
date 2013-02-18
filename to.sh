@@ -46,7 +46,7 @@ function to {
         local name
         if [ "$2" ]
         then
-            if [ $("$TO_SED" -rn "s/(.*\/.*)/\1/p" <<< "$2") ]
+            if [ $("$TO_SED" -En "s/(.*\/.*)/\1/p" <<< "$2") ]
             then
                 "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
                 return 1
@@ -80,17 +80,17 @@ function to {
 
 # get the directory referred to by a bookmark
 function _to_dir {
-    "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
+    "$TO_SED" -En "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the first part of the path
 function _to_path_head {
-    "$TO_SED" -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
+    "$TO_SED" -En "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
 }
 
 # get the rest of the path
 function _to_path_tail {
-    "$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
+    "$TO_SED" -En "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
 }
 
 # get the expanded path of a bookmark/path
@@ -107,7 +107,7 @@ function _to_reldir {
 
 # remove bookmark
 function _to_rm {
-    "$TO_SED" -ri "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
+    "$TO_SED" -Ei "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
 }
 
 # clean input for sed search
@@ -150,7 +150,7 @@ function _to {
         if [ -e "$TO_BOOKMARK_FILE" ]
         then
             # get bookmarks
-            compreply="$("$TO_SED" -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
+            compreply="$("$TO_SED" -En "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
         fi
     else
         if [ "$todir" ]
@@ -159,7 +159,7 @@ function _to {
             compreply="$("$TO_COMPGEN" -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/") $compreply"
         else
             # get bookmarks (with slash)
-            compreply="$("$TO_SED" -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
+            compreply="$("$TO_SED" -En "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
         fi
     fi
     # generate reply
@@ -182,3 +182,4 @@ if [ "$ZSH_VERSION" ]; then
 else
     "$TO_COMPLETE" -o filenames -o nospace -F _to_bash to
 fi
+
