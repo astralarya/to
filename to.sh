@@ -30,7 +30,7 @@ function to {
     then
         if [ "$1" = "-b" ]
         then
-            local path="$("$TO_PWD")"
+            local mypath="$("$TO_PWD")"
             local name
             if [ "$2" ]
             then
@@ -41,11 +41,11 @@ function to {
                 fi
                 name="$2"
             else
-                name="$("$TO_BASENAME" "$path")"
+                name="$("$TO_BASENAME" "$mypath")"
             fi
             # add bookmark
             _to_rm "$name"
-            "$TO_ECHO" "$name|$path" >> "$TO_BOOKMARK_FILE"
+            "$TO_ECHO" "$name|$mypath" >> "$TO_BOOKMARK_FILE"
         elif [ "$1" = "-r" ]
         then
             # remove bookmark
