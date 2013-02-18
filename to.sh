@@ -32,7 +32,7 @@ function to {
         then
             if [ "$2" ]
             then
-                if [ $(expr "$2" : ".*/.*") != 0 ]
+                if [ $("$TO_ECHO" "$2" | "$TO_SED" -rn "s/(.*\/.*)/\1/p") ]
                 then
                     "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
                     return 1
