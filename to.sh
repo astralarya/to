@@ -147,11 +147,8 @@ function _to {
             # add current directory
             compreply="$("$TO_BASENAME" "$($TO_PWD)" ) $compreply"
         fi
-        if [ -e "$TO_BOOKMARK_FILE" ]
-        then
-            # get bookmarks
-            compreply="$("$TO_SED" -En "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
-        fi
+        # get bookmarks
+        compreply="$("$TO_SED" -En "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
     else
         if [ "$todir" ]
         then
