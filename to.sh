@@ -50,8 +50,7 @@ function to {
         then
             # remove bookmark
             _to_rm "$2"
-        elif [ -e "$TO_BOOKMARK_FILE" ]
-        then
+        else
             # go to bookmark if found
             local bookmark="$(_to_path_head "$1")"
             local extra="$(_to_path_tail "$1")"
@@ -62,8 +61,6 @@ function to {
             else
                 "$TO_ECHO" "No shortcut: $bookmark"
             fi
-        else
-            "$TO_ECHO" "No shortcut: $bookmark"
         fi
     elif [ -e "$TO_BOOKMARK_FILE" ]
     then
