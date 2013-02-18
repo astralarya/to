@@ -120,7 +120,6 @@ function _to_regex {
 # $2 = COMP_CWORDS (index to current word)
 function _to {
     # get parameters
-    local comp_words=$1
     declare -a comp_words=("${!1}")
     local comp_cword=$2
     # get components
