@@ -134,13 +134,13 @@ function _to {
         fi
     elif [ -e "$TO_BOOKMARK_FILE" ]
     then
-        # get bookmarks (with slash)
-        COMPREPLY=$($TO_SED -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE")
         if [ "$todir" ]
         then
             # add subdirectories
-            local subdir="$(compgen -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/")"
-            COMPREPLY="$subdir $COMPREPLY"
+            COMPREPLY="$(compgen -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/")"
+        else
+            # get bookmarks (with slash)
+            COMPREPLY="$($TO_SED -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $COMPREPLY"
         fi
     fi
     # generate reply
