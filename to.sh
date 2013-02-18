@@ -32,45 +32,51 @@ function to {
         "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
     fi
 
-    if [ "$1" ]
+    # show bookmarks
+    if [ -z "$1" ]
     then
-        if [ "$1" = "-b" ]
-        then
-            local mypath="$("$TO_PWD")"
-            local name
-            if [ "$2" ]
-            then
-                if [ $("$TO_SED" -rn "s/(.*\/.*)/\1/p" <<< "$2") ]
-                then
-                    "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
-                    return 1
-                fi
-                name="$2"
-            else
-                name="$("$TO_BASENAME" "$mypath")"
-            fi
-            # add bookmark
-            _to_rm "$name"
-            "$TO_ECHO" "$name|$mypath" >> "$TO_BOOKMARK_FILE"
-        elif [ "$1" = "-r" ]
-        then
-            # remove bookmark
-            _to_rm "$2"
-        else
-            # go to bookmark if found
-            local bookmark="$(_to_path_head "$1")"
-            local extra="$(_to_path_tail "$1")"
-            local todir="$(_to_dir "$bookmark")"
-            if [ "$todir" ]
-            then
-                "$TO_CD" "$(_to_reldir "$1")"
-            else
-                "$TO_ECHO" "No shortcut: $bookmark"
-            fi
-        fi
-    else
-        # show bookmarks
         "$TO_CAT" "$TO_BOOKMARK_FILE"
+        return 0
+    fi
+
+    # add bookmark
+    if [ "$1" = "-b" ]
+    then
+        local mypath="$("$TO_PWD")"
+        local name
+        if [ "$2" ]
+        then
+            if [ $("$TO_SED" -rn "s/(.*\/.*)/\1/p" <<< "$2") ]
+            then
+                "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
+                return 1
+            fi
+            name="$2"
+        else
+            name="$("$TO_BASENAME" "$mypath")"
+        fi
+        # add bookmark
+        _to_rm "$name"
+        "$TO_ECHO" "$name|$mypath" >> "$TO_BOOKMARK_FILE"
+        return 0
+    fi
+
+    # remove bookmark
+    if [ "$1" = "-r" ]
+    then
+        _to_rm "$2"
+        return 0
+    fi
+
+    # go to bookmark
+    local bookmark="$(_to_path_head "$1")"
+    local extra="$(_to_path_tail "$1")"
+    local todir="$(_to_dir "$bookmark")"
+    if [ "$todir" ]
+    then
+        "$TO_CD" "$(_to_reldir "$1")"
+    else
+        "$TO_ECHO" "No shortcut: $bookmark"
     fi
 }
 
