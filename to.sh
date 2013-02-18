@@ -158,5 +158,5 @@ function _to_zsh {
 if [ "$ZSH_VERSION" ]; then
     compctl -K _to_zsh to
 else
-    complete -o nospace -F _to to
+    complete -o filenames -o nospace -F _to to
 fi
