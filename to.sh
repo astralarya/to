@@ -32,16 +32,14 @@ function to {
         "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
     fi
 
-    # show bookmarks
     if [ -z "$1" ]
     then
+        # show bookmarks
         "$TO_CAT" "$TO_BOOKMARK_FILE"
         return 0
-    fi
-
-    # add bookmark
-    if [ "$1" = "-b" ]
+    elif [ "$1" = "-b" ]
     then
+        # add bookmark
         local mypath="$("$TO_PWD")"
         local name
         if [ "$2" ]
@@ -59,11 +57,9 @@ function to {
         _to_rm "$name"
         "$TO_ECHO" "$name|$mypath" >> "$TO_BOOKMARK_FILE"
         return 0
-    fi
-
-    # remove bookmark
-    if [ "$1" = "-r" ]
+    elif [ "$1" = "-r" ]
     then
+        # remove bookmark
         _to_rm "$2"
         return 0
     fi
