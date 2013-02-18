@@ -32,6 +32,8 @@ function to {
     then
         if [ "$1" = "-b" ]
         then
+            local path="$("$TO_PWD")"
+            local name
             if [ "$2" ]
             then
                 if [ $("$TO_SED" -rn "s/(.*\/.*)/\1/p" <<< "$2") ]
@@ -39,10 +41,13 @@ function to {
                     "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
                     return 1
                 fi
-                # add bookmark
-                _to_rm "$2"
-                "$TO_ECHO" "$2|`"$TO_PWD"`" >> "$TO_BOOKMARK_FILE"
+                name="$2"
+            else
+                name="$("$TO_BASENAME" "$path")"
             fi
+            # add bookmark
+            _to_rm "$name"
+            "$TO_ECHO" "$name|$path" >> "$TO_BOOKMARK_FILE"
         elif [ "$1" = "-r" ]
         then
             # remove bookmark
