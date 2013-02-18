@@ -143,7 +143,6 @@ function _to {
         then
             # get bookmarks
             compreply="$($TO_SED -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
-
         fi
     elif [ -e "$TO_BOOKMARK_FILE" ]
     then
@@ -164,9 +163,15 @@ function _to {
 function _to_bash {
     COMPREPLY=( $(_to COMP_WORDS[@] $COMP_CWORD) )
 }
+# tab completion zsh
+function _to_zsh {
+    \compadd - "$(_to words[@] $CURRENT)"
+}
 
 # setup tab completion
 if [ "$ZSH_VERSION" ]; then
-    bashcompinit # TODO test if this works
+    \bashcompinit # TODO test if this works
+    $TO_COMPLETE -o filenames -o nospace -F _to_zsh to
+else
+    $TO_COMPLETE -o filenames -o nospace -F _to_bash to
 fi
-$TO_COMPLETE -o filenames -o nospace -F _to_bash to
