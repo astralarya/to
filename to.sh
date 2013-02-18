@@ -19,6 +19,7 @@
 
 TO_BOOKMARK_FILE=~/.bookmarks
 TO_ECHO=\echo
+TO_CD=\cd
 TO_CAT=\cat
 TO_PWD=\pwd
 TO_BASENAME=\basename
@@ -31,7 +32,7 @@ function to {
         then
             if [ "$2" ]
             then
-                if expr "$2" : ".*/.*"
+                if [ $(expr "$2" : ".*/.*") != 0 ]
                 then
                     echo "bookmark name may not contain forward slashes" >&2
                     return 1
@@ -52,7 +53,7 @@ function to {
             local todir="$(_to_dir "$bookmark")"
             if [ "$todir" ]
             then
-                cd "$(_to_reldir "$1")"
+                "$TO_CD" "$(_to_reldir "$1")"
             else
                 "$TO_ECHO" "No shortcut: $bookmark"
             fi
