@@ -142,8 +142,7 @@ function _to {
             COMPREPLY="$("$TO_SED" -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $COMPREPLY"
 
         fi
-    elif [ -e "$TO_BOOKMARK_FILE" ]
-    then
+    else
         if [ "$todir" ]
         then
             # add subdirectories
