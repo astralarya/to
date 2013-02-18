@@ -165,16 +165,15 @@ function _to {
 function _to_bash {
     COMPREPLY=( $(_to COMP_WORDS[@] $COMP_CWORD) )
 }
-# tab completion zsh
+# tab completion zsh TODO remove?
 function _to_zsh {
     \compadd - "$(_to words[@] $CURRENT)"
 }
 
 # setup tab completion
 if [ "$ZSH_VERSION" ]; then
-    \compinit # TODO test if this works
-    \bashcompinit # TODO test if this works
-    "$TO_COMPLETE" -o filenames -o nospace -F _to_zsh to
+    autoload -U +X bashcompinit && bashcompinit
+    "$TO_COMPLETE" -o filenames -o nospace -F _to_bash to
 else
     "$TO_COMPLETE" -o filenames -o nospace -F _to_bash to
 fi
