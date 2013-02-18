@@ -76,7 +76,10 @@ function to {
 
 # get the directory referred to by a bookmark
 function _to_dir {
-    "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
+    if [ -e "$TO_BOOKMARK_FILE" ]
+    then
+        "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
+    fi
 }
 
 # get the first part of the path
