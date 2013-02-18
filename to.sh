@@ -113,23 +113,36 @@ function _to_regex {
     fi
 }
 
-# tab completion bash
+# tab completion generic
+# TODO make this shell agnostic
+
+TO_COMPGEN=\compgen
+
+# $1 = COMP_WORDS (words in buffer)
+# $2 = COMP_CWORDS (index to current word)
 function _to {
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    # get parameters
+    local comp_words=$1
+    declare -a comp_words=("${!1}")
+    local comp_cword=$2
+    # get components
+    local cur="${comp_words[comp_cword]}"
+    local prev="${comp_words[comp_cword-1]}"
     local bookmark="$(_to_path_head "$cur")"
     local todir="$( _to_dir "$bookmark")"
+    # build reply
+    local compreply
     if [ "$prev" = "-b" -o "$prev" = "-r" ]
     then
         if [ "$prev" = "-b" ]
         then
             # add current directory
-            COMPREPLY="$($TO_BASENAME "$($TO_PWD)" )"
+            compreply="$($TO_BASENAME "$($TO_PWD)" ) $compreply"
         fi
         if [ -e "$TO_BOOKMARK_FILE" ]
         then
             # get bookmarks
-            COMPREPLY="$($TO_SED -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $COMPREPLY"
+            compreply="$($TO_SED -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
 
         fi
     elif [ -e "$TO_BOOKMARK_FILE" ]
@@ -137,26 +150,29 @@ function _to {
         if [ "$todir" ]
         then
             # add subdirectories
-            COMPREPLY="$(compgen -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/")"
+            compreply="$($TO_COMPGEN -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/")"
         else
             # get bookmarks (with slash)
-            COMPREPLY="$($TO_SED -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $COMPREPLY"
+            compreply="$($TO_SED -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
         fi
     fi
     # generate reply
-    COMPREPLY=( $(compgen -W "$COMPREPLY" -- "$cur") )
+    $TO_COMPGEN -W "$compreply" -- "$cur"
+}
+
+# tab completion bash
+function _to_bash {
+    COMPREPLY=( $(_to COMP_WORDS[@] $COMP_CWORD) )
 }
 
 # tab completion zsh
+# TODO parameterize this
 function _to_zsh {
-    if [ -e "$TO_BOOKMARK_FILE" ]
-    then
-        reply=(`$TO_SED -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE"`)
-    fi
+    reply=( $(_to MY_COMP_WORDS[@] $MY_COMP_CWORD) )
 }
 
 if [ "$ZSH_VERSION" ]; then
     compctl -K _to_zsh to
 else
-    complete -o filenames -o nospace -F _to to
+    complete -o filenames -o nospace -F _to_bash to
 fi
