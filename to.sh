@@ -34,14 +34,14 @@ function to {
         then
             if [ "$2" ]
             then
-                if [ $($TO_SED -rn "s/(.*\/.*)/\1/p" <<< "$2") ]
+                if [ $("$TO_SED" -rn "s/(.*\/.*)/\1/p" <<< "$2") ]
                 then
-                    $TO_ECHO "bookmark name may not contain forward slashes" >&2
+                    "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
                     return 1
                 fi
                 # add bookmark
                 _to_rm "$2"
-                $TO_ECHO "$2|`$TO_PWD`" >> "$TO_BOOKMARK_FILE"
+                "$TO_ECHO" "$2|`"$TO_PWD"`" >> "$TO_BOOKMARK_FILE"
             fi
         elif [ "$1" = "-r" ]
         then
@@ -55,33 +55,33 @@ function to {
             local todir="$(_to_dir "$bookmark")"
             if [ "$todir" ]
             then
-                $TO_CD "$(_to_reldir "$1")"
+                "$TO_CD" "$(_to_reldir "$1")"
             else
-                $TO_ECHO "No shortcut: $bookmark"
+                "$TO_ECHO" "No shortcut: $bookmark"
             fi
         else
-            $TO_ECHO "No shortcut: $bookmark"
+            "$TO_ECHO" "No shortcut: $bookmark"
         fi
     elif [ -e "$TO_BOOKMARK_FILE" ]
     then
         # show bookmarks
-        $TO_CAT "$TO_BOOKMARK_FILE"
+        "$TO_CAT" "$TO_BOOKMARK_FILE"
     fi
 }
 
 # get the directory referred to by a bookmark
 function _to_dir {
-    $TO_SED -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
+    "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the first part of the path
 function _to_path_head {
-    $TO_SED -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
+    "$TO_SED" -rn "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
 }
 
 # get the rest of the path
 function _to_path_tail {
-    $TO_SED -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
+    "$TO_SED" -rn "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
 }
 
 # get the expanded path of a bookmark/path
@@ -90,9 +90,9 @@ function _to_reldir {
     if [ "$todir" = "/" ]
     then
         # special case for root dir
-        $TO_ECHO "$(_to_path_tail "$1")"
+        "$TO_ECHO" "$(_to_path_tail "$1")"
     else
-        $TO_ECHO "$todir$(_to_path_tail "$1")"
+        "$TO_ECHO" "$todir$(_to_path_tail "$1")"
     fi
 }
 
@@ -100,7 +100,7 @@ function _to_reldir {
 function _to_rm {
     if [ -e "$TO_BOOKMARK_FILE" ]
     then
-        $TO_SED -ri "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
+        "$TO_SED" -ri "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
     fi
 }
 
@@ -109,9 +109,9 @@ function _to_regex {
     if [ "$1" = "/" ]
     then
         # special case for root dir
-        $TO_ECHO
+        "$TO_ECHO"
     else
-        $TO_ECHO $1 | $TO_SED -e 's/[\/&]/\\&/g'
+        "$TO_ECHO" $1 | "$TO_SED" -e 's/[\/&]/\\&/g'
     fi
 }
 
@@ -135,26 +135,26 @@ function _to {
         if [ "$prev" = "-b" ]
         then
             # add current directory
-            compreply="$($TO_BASENAME "$($TO_PWD)" ) $compreply"
+            compreply="$("$TO_BASENAME" "$($TO_PWD)" ) $compreply"
         fi
         if [ -e "$TO_BOOKMARK_FILE" ]
         then
             # get bookmarks
-            compreply="$($TO_SED -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
+            compreply="$("$TO_SED" -rn "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
         fi
     elif [ -e "$TO_BOOKMARK_FILE" ]
     then
         if [ "$todir" ]
         then
             # add subdirectories
-            compreply="$($TO_COMPGEN -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/") $compreply"
+            compreply="$("$TO_COMPGEN" -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/") $compreply"
         else
             # get bookmarks (with slash)
-            compreply="$($TO_SED -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
+            compreply="$("$TO_SED" -rn "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
         fi
     fi
     # generate reply
-    $TO_COMPGEN -W "$compreply" -- "$cur"
+    "$TO_COMPGEN" -W "$compreply" -- "$cur"
 }
 
 # tab completion bash
