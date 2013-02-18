@@ -30,6 +30,9 @@ $ to foo/bar
 $ to -b foo
 >set the foo bookmark to the current directory
 
+$ to -b
+>create a bookmark with the name of the current directory pointing to it
+
 $ to -r foo
 >remove the foo bookmark
 
