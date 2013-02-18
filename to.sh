@@ -26,6 +26,12 @@ TO_BASENAME=\basename
 TO_SED=\sed
 
 function to {
+    # create empty bookmarks file if it does not exist
+    if [ ! -e "$TO_BOOKMARK_FILE" ]
+    then
+        "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
+    fi
+
     if [ "$1" ]
     then
         if [ "$1" = "-b" ]
@@ -50,8 +56,7 @@ function to {
         then
             # remove bookmark
             _to_rm "$2"
-        elif [ -e "$TO_BOOKMARK_FILE" ]
-        then
+        else
             # go to bookmark if found
             local bookmark="$(_to_path_head "$1")"
             local extra="$(_to_path_tail "$1")"
@@ -62,11 +67,8 @@ function to {
             else
                 "$TO_ECHO" "No shortcut: $bookmark"
             fi
-        else
-            "$TO_ECHO" "No shortcut: $bookmark"
         fi
-    elif [ -e "$TO_BOOKMARK_FILE" ]
-    then
+    else
         # show bookmarks
         "$TO_CAT" "$TO_BOOKMARK_FILE"
     fi
@@ -74,10 +76,7 @@ function to {
 
 # get the directory referred to by a bookmark
 function _to_dir {
-    if [ -e "$TO_BOOKMARK_FILE" ]
-    then
-        "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
-    fi
+    "$TO_SED" -rn "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the first part of the path
@@ -104,10 +103,7 @@ function _to_reldir {
 
 # remove bookmark
 function _to_rm {
-    if [ -e "$TO_BOOKMARK_FILE" ]
-    then
-        "$TO_SED" -ri "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
-    fi
+    "$TO_SED" -ri "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
 }
 
 # clean input for sed search
@@ -123,6 +119,12 @@ function _to_regex {
 
 # tab completion bash
 function _to {
+    # create empty bookmarks file if it does not exist
+    if [ ! -e "$TO_BOOKMARK_FILE" ]
+    then
+        "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
+    fi
+
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
     local bookmark="$(_to_path_head "$cur")"
