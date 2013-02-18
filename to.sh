@@ -24,6 +24,8 @@ TO_CAT=\cat
 TO_PWD=\pwd
 TO_BASENAME=\basename
 TO_SED=\sed
+TO_COMPGEN=\compgen
+TO_COMPLETE=\complete 
 
 function to {
     if [ "$1" ]
@@ -114,9 +116,7 @@ function _to_regex {
 }
 
 # tab completion generic
-# TODO make this shell agnostic
 
-TO_COMPGEN=\compgen
 
 # $1 = COMP_WORDS (words in buffer)
 # $2 = COMP_CWORDS (index to current word)
@@ -165,14 +165,8 @@ function _to_bash {
     COMPREPLY=( $(_to COMP_WORDS[@] $COMP_CWORD) )
 }
 
-# tab completion zsh
-# TODO parameterize this
-function _to_zsh {
-    reply=( $(_to MY_COMP_WORDS[@] $MY_COMP_CWORD) )
-}
-
+# setup tab completion
 if [ "$ZSH_VERSION" ]; then
-    compctl -K _to_zsh to
-else
-    complete -o filenames -o nospace -F _to_bash to
+    bashcompinit # TODO test if this works
 fi
+$TO_COMPLETE -o filenames -o nospace -F _to_bash to
