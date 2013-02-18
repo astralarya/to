@@ -116,8 +116,6 @@ function _to_regex {
 }
 
 # tab completion generic
-
-
 # $1 = COMP_WORDS (words in buffer)
 # $2 = COMP_CWORDS (index to current word)
 function _to {
