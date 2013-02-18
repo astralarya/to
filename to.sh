@@ -34,7 +34,7 @@ function to {
             then
                 if [ $(expr "$2" : ".*/.*") != 0 ]
                 then
-                    echo "bookmark name may not contain forward slashes" >&2
+                    "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
                     return 1
                 fi
                 # add bookmark
