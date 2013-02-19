@@ -147,19 +147,19 @@ function _to {
         if [ "$prev" = "-b" ]
         then
             # add current directory
-            compreply="$("$TO_BASENAME" "$PWD" ) $compreply"
+            compreply="$("$TO_BASENAME" "$PWD" )"$'\n'"$compreply"
         fi
         # get bookmarks
-        compreply="$("$TO_SED" -En "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
+        compreply="$("$TO_SED" -En "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE")"$'\n'"$compreply"
     else
         if [ "$todir" ]
         then
             # add subdirectories
             local reldir="$(_to_reldir $cur)\*"
-            compreply="$( "$TO_FIND" $("$TO_DIRNAME" $reldir) -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" ) $compreply"
+            compreply="$( "$TO_FIND" $("$TO_DIRNAME" $reldir) -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" )"$'\n'"$compreply"
         else
             # get bookmarks (with slash)
-            compreply="$("$TO_SED" -En "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
+            compreply="$("$TO_SED" -En "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE")"$'\n'"$compreply"
         fi
     fi
     # generate reply
