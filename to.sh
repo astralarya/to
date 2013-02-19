@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see http://www.gnu.org/licenses/.
 
-
+# Settings
 TO_BOOKMARK_FILE=~/.bookmarks
 TO_ECHO=\echo
 TO_CD=\cd
@@ -25,6 +25,7 @@ TO_FIND=\find
 TO_DIRNAME=\dirname
 TO_BASENAME=\basename
 TO_SED=\sed
+
 
 function to {
     # create empty bookmarks file if it does not exist
@@ -81,6 +82,12 @@ function to {
     fi
 }
 
+# Return list of bookmarks in $TO_BOOKMARK_FILE
+# $1 sed safe suffix  WARNING escape any /s
+function _to_bookmarks {
+    "$TO_SED" -En "s/(.*)\|.*/\1$1/p" "$TO_BOOKMARK_FILE"
+}
+
 # get the directory referred to by a bookmark
 function _to_dir {
     "$TO_SED" -En "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
@@ -124,9 +131,22 @@ function _to_regex {
     fi
 }
 
+# get find the directories that could be subdirectory expansions of
+# $1 word
+function _to_subdirs {
+    local bookmark="$(_to_path_head "$1")"
+    local todir="$(_to_dir "$bookmark")"
+    local reldir="$(_to_reldir "$1")\*"
+    if [ "$todir" ]
+    then
+        "$TO_FIND" $("$TO_DIRNAME" "$reldir") -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
+    fi
+}
+
 # tab completion generic
 # $TO_COMP_WORDS = array of words in buffer
 # $1 = index to current word
+# Output valid completions
 function _to {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_FILE" ]
@@ -138,8 +158,6 @@ function _to {
     # get components
     local cur="${TO_COMP_WORDS[comp_cword]}"
     local prev="${TO_COMP_WORDS[comp_cword-1]}"
-    local bookmark="$(_to_path_head "$cur")"
-    local todir="$(_to_dir "$bookmark")"
     # build reply
     local compreply
     if [ "$prev" = "-b" -o "$prev" = "-r" ]
@@ -150,16 +168,16 @@ function _to {
             compreply="$("$TO_BASENAME" "$PWD" )"$'\n'"$compreply"
         fi
         # get bookmarks
-        compreply="$("$TO_SED" -En "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE")"$'\n'"$compreply"
+        compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        if [ "$todir" ]
+        local subdirs="$(_to_subdirs "$cur" )"
+        if [ "$subdirs" ]
         then
             # add subdirectories
-            local reldir="$(_to_reldir "$cur")\*"
-            compreply="$( "$TO_FIND" $("$TO_DIRNAME" "$reldir") -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" )"$'\n'"$compreply"
+            compreply="$subdirs"$'\n'"$compreply"
         else
             # get bookmarks (with slash)
-            compreply="$("$TO_SED" -En "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE")"$'\n'"$compreply"
+            compreply="$(_to_bookmarks "\/")"$'\n'"$compreply"
         fi
     fi
     # generate reply
