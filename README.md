@@ -1,9 +1,8 @@
 to
 ==
 
-to - A simple script for bookmarking file system locations in bash & zsh with tab completion
+to - A simple script for bookmarking file system locations in POSIX with tab completion
 
-Supports Linux and OSX
 
 Installation
 ============
