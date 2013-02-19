@@ -21,7 +21,6 @@ TO_BOOKMARK_FILE=~/.bookmarks
 TO_ECHO=\echo
 TO_CD=\cd
 TO_CAT=\cat
-TO_PWD=\pwd
 TO_FIND=\find
 TO_DIRNAME=\dirname
 TO_BASENAME=\basename
@@ -42,7 +41,6 @@ function to {
     elif [ "$1" = "-b" ]
     then
         # add bookmark
-        local mypath="$("$TO_PWD")"
         local name
         if [ "$2" ]
         then
@@ -53,11 +51,11 @@ function to {
             fi
             name="$2"
         else
-            name="$("$TO_BASENAME" "$mypath")"
+            name="$("$TO_BASENAME" "$PWD")"
         fi
         # add bookmark
         _to_rm "$name"
-        "$TO_ECHO" "$name|$mypath" >> "$TO_BOOKMARK_FILE"
+        "$TO_ECHO" "$name|$PWD" >> "$TO_BOOKMARK_FILE"
         return 0
     elif [ "$1" = "-r" ]
     then
@@ -144,7 +142,7 @@ function _to {
         if [ "$prev" = "-b" ]
         then
             # add current directory
-            compreply="$("$TO_BASENAME" "$($TO_PWD)" ) $compreply"
+            compreply="$("$TO_BASENAME" "$PWD" ) $compreply"
         fi
         # get bookmarks
         compreply="$("$TO_SED" -En "s/(.*)\|.*/\1/p" "$TO_BOOKMARK_FILE") $compreply"
