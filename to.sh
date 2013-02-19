@@ -41,7 +41,7 @@ function to {
     elif [ "$1" = "-p" ]
     then
         # print path of bookmark
-        "$TO_ECHO" $(_to_reldir $2)
+        "$TO_ECHO" "$(_to_reldir $2)"
         return 0
     elif [ "$1" = "-b" ]
     then
@@ -156,7 +156,7 @@ function _to {
         then
             # add subdirectories
             local reldir="$(_to_reldir $cur)\*"
-            compreply="$( "$TO_FIND" $($TO_DIRNAME $reldir) -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -r "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" ) $compreply"
+            compreply="$( "$TO_FIND" $("$TO_DIRNAME" $reldir) -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -r "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" ) $compreply"
         else
             # get bookmarks (with slash)
             compreply="$("$TO_SED" -En "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
