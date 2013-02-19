@@ -122,22 +122,21 @@ function _to_regex {
 }
 
 # tab completion generic
-# $1 = COMP_WORDS (words in buffer)
-# $2 = COMP_CWORDS (index to current word)
+# $TO_COMP_WORDS = array of words in buffer
+# $1 = index to current word
 function _to {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_FILE" ]
     then
         "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
     fi
-    # get parameters
-    declare -a comp_words=("${!1}")
-    local comp_cword=$2
+    # get parameter
+    local comp_cword=$1
     # get components
-    local cur="${comp_words[comp_cword]}"
-    local prev="${comp_words[comp_cword-1]}"
+    local cur="${TO_COMP_WORDS[comp_cword]}"
+    local prev="${TO_COMP_WORDS[comp_cword-1]}"
     local bookmark="$(_to_path_head "$cur")"
-    local todir="$( _to_dir "$bookmark")"
+    local todir="$(_to_dir "$bookmark")"
     # build reply
     local compreply
     if [ "$prev" = "-b" -o "$prev" = "-r" ]
@@ -165,11 +164,9 @@ function _to {
 
 # tab completion bash
 function _to_bash {
-    COMPREPLY=( $(_to COMP_WORDS[@] $COMP_CWORD) )
-}
-# tab completion zsh TODO remove?
-function _to_zsh {
-    \compadd - "$(_to words[@] $CURRENT)"
+    declare -a TO_COMP_WORDS
+    TO_COMP_WORDS=( "${COMP_WORDS[@]}" )
+    COMPREPLY=( $(_to $COMP_CWORD) )
 }
 
 # setup tab completion
