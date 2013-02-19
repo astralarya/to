@@ -120,7 +120,7 @@ function _to_regex {
         # special case for root dir
         "$TO_ECHO"
     else
-        "$TO_ECHO" "$1" | "$TO_SED" -e 's/[\/&]/\\&/g'
+        "$TO_ECHO" "$1" | "$TO_SED" -E 's/[\/&]/\\&/g'
     fi
 }
 
