@@ -41,7 +41,7 @@ function to {
     elif [ "$1" = "-p" ]
     then
         # print path of bookmark
-        "$TO_ECHO" "$(_to_reldir $2)"
+        "$TO_ECHO" "$(_to_reldir "$2")"
         return 0
     elif [ "$1" = "-b" ]
     then
@@ -120,7 +120,7 @@ function _to_regex {
         # special case for root dir
         "$TO_ECHO"
     else
-        "$TO_ECHO" $1 | "$TO_SED" -e 's/[\/&]/\\&/g'
+        "$TO_ECHO" "$1" | "$TO_SED" -e 's/[\/&]/\\&/g'
     fi
 }
 
@@ -155,8 +155,8 @@ function _to {
         if [ "$todir" ]
         then
             # add subdirectories
-            local reldir="$(_to_reldir $cur)\*"
-            compreply="$( "$TO_FIND" $("$TO_DIRNAME" $reldir) -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" )"$'\n'"$compreply"
+            local reldir="$(_to_reldir "$cur")\*"
+            compreply="$( "$TO_FIND" $("$TO_DIRNAME" "$reldir") -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" )"$'\n'"$compreply"
         else
             # get bookmarks (with slash)
             compreply="$("$TO_SED" -En "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE")"$'\n'"$compreply"
@@ -170,7 +170,7 @@ function _to {
 function _to_bash {
     declare -a TO_COMP_WORDS
     TO_COMP_WORDS=( "${COMP_WORDS[@]}" )
-    COMPREPLY=( $(_to $COMP_CWORD) )
+    COMPREPLY=( $(_to "$COMP_CWORD") )
 }
 
 # setup tab completion
