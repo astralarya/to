@@ -67,6 +67,8 @@ The following functionality should either be provided or built in:
 License
 =======
 
+to - v1.0
+
 Copyright (C) 2013  Mara Kim, Philipp Adolf, Max Thrun
 
 This program is free software: you can redistribute it and/or modify
