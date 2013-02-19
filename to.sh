@@ -22,10 +22,10 @@ TO_ECHO=\echo
 TO_CD=\cd
 TO_CAT=\cat
 TO_PWD=\pwd
+TO_FIND=\find
+TO_DIRNAME=\dirname
 TO_BASENAME=\basename
 TO_SED=\sed
-TO_COMPGEN=\compgen
-TO_COMPLETE=\complete 
 
 function to {
     # create empty bookmarks file if it does not exist
@@ -152,14 +152,15 @@ function _to {
         if [ "$todir" ]
         then
             # add subdirectories
-            compreply="$("$TO_COMPGEN" -S "/" -d "$(_to_reldir $cur)" | $TO_SED -r "s/^$(_to_regex "$todir")/$bookmark/") $compreply"
+            local reldir="$(_to_reldir $cur)\*"
+            compreply="$( "$TO_FIND" $($TO_DIRNAME $reldir) -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -r "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//" ) $compreply"
         else
             # get bookmarks (with slash)
             compreply="$("$TO_SED" -En "s/(.*)\|.*/\1\//p" "$TO_BOOKMARK_FILE") $compreply"
         fi
     fi
     # generate reply
-    "$TO_COMPGEN" -W "$compreply" -- "$cur"
+    "$TO_SED" -n "/^$(_to_regex "$cur").*/p" <<<"$compreply"
 }
 
 # tab completion bash
@@ -172,8 +173,8 @@ function _to_bash {
 # setup tab completion
 if [ "$ZSH_VERSION" ]; then
     autoload -U +X bashcompinit && bashcompinit
-    "$TO_COMPLETE" -o filenames -o nospace -F _to_bash to
+    \complete -o filenames -o nospace -F _to_bash to
 else
-    "$TO_COMPLETE" -o filenames -o nospace -F _to_bash to
+    \complete -o filenames -o nospace -F _to_bash to
 fi
 
