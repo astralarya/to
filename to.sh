@@ -38,6 +38,11 @@ function to {
         # show bookmarks
         "$TO_CAT" "$TO_BOOKMARK_FILE"
         return 0
+    elif [ "$1" = "-p" ]
+    then
+        # print path of bookmark
+        "$TO_ECHO" $(_to_reldir $2)
+        return 0
     elif [ "$1" = "-b" ]
     then
         # add bookmark

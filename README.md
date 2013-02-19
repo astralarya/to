@@ -19,6 +19,7 @@ to [OPTION] [BOOKMARK]
 Options
 * -b	Add a new bookmark for current directory (overwrites any current bookmark)
 * -r	Remove bookmark
+* -p	Print bookmark path (with subdirectories)
 
 $ to
 >print all bookmarks
@@ -38,6 +39,8 @@ $ to -b
 $ to -r foo
 >remove the foo bookmark
 
+$ to -p foo
+>print the path of the foo bookmark
 
 You can also manually edit the $TO_BOOKMARKS file (defined in to.sh, default ~/.bookmarks)
 The syntax is:
