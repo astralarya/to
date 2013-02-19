@@ -1,7 +1,7 @@
 to
 ==
 
-to - A simple script for bookmarking directory locations in POSIX with tab completion
+to - A simple script for bookmarking directory locations in POSIX-like systems with tab completion
 
 
 Installation
