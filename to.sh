@@ -172,8 +172,8 @@ function _to_bash {
 
 # setup tab completion
 if [ "$ZSH_VERSION" ]; then
-    autoload -U +X bashcompinit && bashcompinit
-    \complete -o filenames -o nospace -F _to_bash to
+    \autoload -U +X bashcompinit && \bashcompinit
+    \complete -o nospace -F _to_bash to
 else
     \complete -o filenames -o nospace -F _to_bash to
 fi
