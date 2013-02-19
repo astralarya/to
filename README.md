@@ -7,7 +7,7 @@ to - A simple script for bookmarking directory locations in POSIX with tab compl
 Installation
 ============
 
-Shells currently supported are bash and zsh.  Other shells may be compatible, but have not been tested.
+Shells currently supported are bash and zsh.  Other shells may be compatible, but they have not been tested.
 
 Source to.sh in your shell's initialization file.
 
