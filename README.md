@@ -53,7 +53,6 @@ The following functionality should be either be provided or built in:
 * cd
 * echo
 * cat
-* pwd
 * find
 * dirname
 * basename
