@@ -8,7 +8,9 @@ Supports Linux and OSX
 Installation
 ============
 
-source to.sh in your .bashrc or .zshrc
+source to.sh in your shell's initialization file.
+
+For more details see https://github.com/resultsreturned/to/wiki
 
 
 Usage
