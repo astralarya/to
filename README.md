@@ -55,7 +55,7 @@ Dependencies
 
 * bash or zsh
 
-The following functionality should be either be provided or built in:
+The following functionality should either be provided or built in:
 * cd
 * echo
 * cat
