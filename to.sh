@@ -26,7 +26,7 @@ TO_DIRNAME=\dirname
 TO_BASENAME=\basename
 TO_SED=\sed
 
-
+# Userspace function
 function to {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_FILE" ]
@@ -103,7 +103,7 @@ function _to_path_tail {
     "$TO_SED" -En "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
 }
 
-# get the expanded path of a bookmark/path
+# get the absolute path of an expanded bookmark/path
 function _to_reldir {
     local todir="$(_to_dir "$(_to_path_head "$1")" )"
     if [ "$todir" = "/" ]
