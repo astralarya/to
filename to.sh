@@ -16,7 +16,8 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see http://www.gnu.org/licenses/.
 
-# Settings
+### SETTINGS ###
+
 TO_BOOKMARK_FILE=~/.bookmarks
 TO_ECHO=\echo
 TO_CD=\cd
@@ -26,7 +27,9 @@ TO_DIRNAME=\dirname
 TO_BASENAME=\basename
 TO_SED=\sed
 
-# Userspace function
+
+### MAIN ###
+
 function to {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_FILE" ]
@@ -82,66 +85,8 @@ function to {
     fi
 }
 
-# Return list of bookmarks in $TO_BOOKMARK_FILE
-# $1 sed safe suffix  WARNING escape any /s
-function _to_bookmarks {
-    "$TO_SED" -En "s/(.*)\|.*/\1$1/p" "$TO_BOOKMARK_FILE"
-}
 
-# get the directory referred to by a bookmark
-function _to_dir {
-    "$TO_SED" -En "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
-}
-
-# get the first part of the path
-function _to_path_head {
-    "$TO_SED" -En "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
-}
-
-# get the rest of the path
-function _to_path_tail {
-    "$TO_SED" -En "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
-}
-
-# get the absolute path of an expanded bookmark/path
-function _to_reldir {
-    local todir="$(_to_dir "$(_to_path_head "$1")" )"
-    if [ "$todir" = "/" ]
-    then
-        # special case for root dir
-        "$TO_ECHO" "$(_to_path_tail "$1")"
-    else
-        "$TO_ECHO" "$todir$(_to_path_tail "$1")"
-    fi
-}
-
-# remove bookmark
-function _to_rm {
-    "$TO_SED" -Ei "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
-}
-
-# clean input for sed search
-function _to_regex {
-    if [ "$1" = "/" ]
-    then
-        # special case for root dir
-        "$TO_ECHO"
-    else
-        "$TO_ECHO" "$1" | "$TO_SED" -E 's/[\/&]/\\&/g'
-    fi
-}
-
-# get find the directories that could be subdirectory expansions of
-# $1 word
-function _to_subdirs {
-    local bookmark="$(_to_path_head "$1")"
-    local todir="$(_to_dir "$bookmark")"
-    local reldir="$(_to_reldir "$1")\*"
-    if [ "$todir" ]
-    then
-        "$TO_FIND" $("$TO_DIRNAME" "$reldir") -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
-    fi
-}
+### TAB COMPLETION ###
 
 # tab completion generic
 # $1 = current word
@@ -196,4 +141,68 @@ if [ "$ZSH_VERSION" ]; then
 else
     \complete -o filenames -o nospace -F _to_bash to
 fi
+
+
+### HELPER FUNCTIONS ###
+
+# Return list of bookmarks in $TO_BOOKMARK_FILE
+# $1 sed safe suffix  WARNING escape any /s
+function _to_bookmarks {
+    "$TO_SED" -En "s/(.*)\|.*/\1$1/p" "$TO_BOOKMARK_FILE"
+}
+
+# get the directory referred to by a bookmark
+function _to_dir {
+    "$TO_SED" -En "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
+}
+
+# get the first part of the path
+function _to_path_head {
+    "$TO_SED" -En "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
+}
+
+# get the rest of the path
+function _to_path_tail {
+    "$TO_SED" -En "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
+}
+
+# get the absolute path of an expanded bookmark/path
+function _to_reldir {
+    local todir="$(_to_dir "$(_to_path_head "$1")" )"
+    if [ "$todir" = "/" ]
+    then
+        # special case for root dir
+        "$TO_ECHO" "$(_to_path_tail "$1")"
+    else
+        "$TO_ECHO" "$todir$(_to_path_tail "$1")"
+    fi
+}
+
+# remove bookmark
+function _to_rm {
+    "$TO_SED" -Ei "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
+}
+
+# clean input for sed search
+function _to_regex {
+    if [ "$1" = "/" ]
+    then
+        # special case for root dir
+        "$TO_ECHO"
+    else
+        "$TO_ECHO" "$1" | "$TO_SED" -E 's/[\/&]/\\&/g'
+    fi
+}
+
+# find the directories that could be subdirectory expansions of
+# $1 word
+function _to_subdirs {
+    local bookmark="$(_to_path_head "$1")"
+    local todir="$(_to_dir "$bookmark")"
+    local reldir="$(_to_reldir "$1")\*"
+    if [ "$todir" ]
+    then
+        "$TO_FIND" $("$TO_DIRNAME" "$reldir") -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
+    fi
+}
 
