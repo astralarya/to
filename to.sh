@@ -155,13 +155,14 @@ function _to {
     fi
     # build reply
     local compreply
-    if [ "$2" = "-b" -o "$2" = "-r" ]
+    if [ "$2" = "-b" ]
     then
-        if [ "$2" = "-b" ]
-        then
-            # add current directory
-            compreply="$("$TO_BASENAME" "$PWD" )"$'\n'"$compreply"
-        fi
+        # add current directory
+        compreply="$("$TO_BASENAME" "$PWD" )"$'\n'"$compreply"
+        # get bookmarks
+        compreply="$(_to_bookmarks)"$'\n'"$compreply"
+    elif [ "$2" = "-r" ]
+    then
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
