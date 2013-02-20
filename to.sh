@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see http://www.gnu.org/licenses/.
 
+
 ### SETTINGS ###
 
 TO_BOOKMARK_FILE=~/.bookmarks
@@ -135,7 +136,8 @@ function _to_bash {
 }
 
 # setup tab completion
-if [ "$ZSH_VERSION" ]; then
+if [ "$ZSH_VERSION" ]
+then
     \autoload -U +X bashcompinit && \bashcompinit
     \complete -o nospace -F _to_bash to
 else
