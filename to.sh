@@ -144,8 +144,8 @@ function _to_subdirs {
 }
 
 # tab completion generic
-# $TO_COMP_WORDS = array of words in buffer
-# $1 = index to current word
+# $1 = current word
+# $2 = previous word
 # Output valid completions
 function _to {
     # create empty bookmarks file if it does not exist
@@ -153,16 +153,11 @@ function _to {
     then
         "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
     fi
-    # get parameter
-    local comp_cword=$1
-    # get components
-    local cur="${TO_COMP_WORDS[comp_cword]}"
-    local prev="${TO_COMP_WORDS[comp_cword-1]}"
     # build reply
     local compreply
-    if [ "$prev" = "-b" -o "$prev" = "-r" ]
+    if [ "$2" = "-b" -o "$2" = "-r" ]
     then
-        if [ "$prev" = "-b" ]
+        if [ "$2" = "-b" ]
         then
             # add current directory
             compreply="$("$TO_BASENAME" "$PWD" )"$'\n'"$compreply"
@@ -170,7 +165,7 @@ function _to {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        local subdirs="$(_to_subdirs "$cur" )"
+        local subdirs="$(_to_subdirs "$1" )"
         if [ "$subdirs" ]
         then
             # add subdirectories
@@ -181,14 +176,16 @@ function _to {
         fi
     fi
     # generate reply
-    "$TO_SED" -n "/^$(_to_regex "$cur").*/p" <<<"$compreply"
+    "$TO_SED" -n "/^$(_to_regex "$1").*/p" <<<"$compreply"
 }
 
 # tab completion bash
 function _to_bash {
-    declare -a TO_COMP_WORDS
-    TO_COMP_WORDS=( "${COMP_WORDS[@]}" )
-    COMPREPLY=( $(_to "$COMP_CWORD") )
+    # get components
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    # call generic tab completion function
+    COMPREPLY=( $(_to "$cur" "$prev") )
 }
 
 # setup tab completion
