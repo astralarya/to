@@ -22,6 +22,7 @@
 TO_BOOKMARK_FILE=~/.bookmarks
 TO_ECHO=\echo
 TO_CD=\cd
+TO_MV=\mv
 TO_CAT=\cat
 TO_FIND=\find
 TO_DIRNAME=\dirname
@@ -182,7 +183,8 @@ function _to_reldir {
 
 # remove bookmark
 function _to_rm {
-    "$TO_SED" -Ei "/^$1\|.*/ d" "$TO_BOOKMARK_FILE"
+    "$TO_SED" -E "/^$1\|.*/ d" "$TO_BOOKMARK_FILE" > "$TO_BOOKMARK_FILE~"
+    "$TO_MV" "$TO_BOOKMARK_FILE~" "$TO_BOOKMARK_FILE"
 }
 
 # clean input for sed search
