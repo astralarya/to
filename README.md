@@ -57,6 +57,7 @@ Dependencies
 
 The following functionality should either be provided or built in:
 * cd
+* mv
 * echo
 * cat
 * find
