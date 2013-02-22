@@ -66,7 +66,18 @@ function to {
         fi
         # add bookmark
         _to_rm "$name"
-        "$TO_ECHO" "$name|$PWD" >> "$TO_BOOKMARK_FILE"
+        if [ "$3" ]
+        then
+            if [ -d "$3" ]
+            then
+                local path=$("$TO_SED" -E "s/\/*$//" <<< "$3")
+                "$TO_ECHO" "$name|$path" >> "$TO_BOOKMARK_FILE"
+            else
+                "$TO_ECHO" "$3 does not refer to a directory"
+            fi
+        else
+            "$TO_ECHO" "$name|$PWD" >> "$TO_BOOKMARK_FILE"
+        fi
         return 0
     elif [ "$1" = "-r" ]
     then
