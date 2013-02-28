@@ -44,6 +44,10 @@ function to {
         # show bookmarks
         "$TO_CAT" "$TO_BOOKMARK_FILE"
         return 0
+    elif [ "$1" = "-h" ]
+    then
+        _to_help
+        return 0
     elif [ "$1" = "-p" ]
     then
         # print path of bookmark
@@ -124,7 +128,7 @@ function _to {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        local subdirs="$(_to_subdirs "$1" )"
+        local subdirs="$(_to_subdirs "$1")"
         if [ "$subdirs" ]
         then
             # add subdirectories
@@ -134,8 +138,8 @@ function _to {
             compreply="$(_to_bookmarks "\/")"$'\n'"$compreply"
         fi
     fi
-    # generate reply
-    "$TO_SED" -n "/^$(_to_regex "$1").*/p" <<<"$compreply"
+    # generate reply and escape spaces
+    "$TO_SED" -n "/^$(_to_regex "$1").*/p"  <<<"$compreply"
 }
 
 # tab completion bash
@@ -158,6 +162,18 @@ fi
 
 
 ### HELPER FUNCTIONS ###
+
+function _to_help {
+    "$TO_ECHO" "Usage: to [OPTION] [BOOKMARK]
+Set the current working directory to a saved bookmark,
+or create such a bookmark
+
+Options
+  -b	Add a new bookmark for current directory (overwrites any current bookmark)
+  -r	Remove bookmark
+  -p	Print bookmark path (with subdirectories)
+  -h	Show help"
+}
 
 # Return list of bookmarks in $TO_BOOKMARK_FILE
 # $1 sed safe suffix  WARNING escape any /s
