@@ -156,7 +156,9 @@ function _to {
         fi
     fi
     # generate reply 
-    "$TO_SED" -n "/^$(_to_regex "$1").*/p"  <<<"$compreply"
+    compreply="$("$TO_SED" -E 's/ /\\ /' <<< "$compreply" | "$TO_SED" -n "/^$(_to_regex "$1").*/p" | "$TO_SED" -E 's/\\ / /' )"
+    echo "$compreply" > testlog
+    echo "$compreply"
 }
 
 # tab completion bash
@@ -249,10 +251,10 @@ function _to_regex {
 function _to_subdirs {
     local bookmark="$(_to_path_head "$1")"
     local todir="$(_to_dir "$bookmark")"
-    local reldir="$(_to_reldir "$1")\*"
     if [ "$todir" ]
     then
-        "$TO_FIND" $("$TO_DIRNAME" "$reldir") -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
+        local reldir="$("$TO_SED" -E 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
+        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
     fi
 }
 
