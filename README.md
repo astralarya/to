@@ -23,6 +23,7 @@ Options
 * -b	Add a new bookmark for current directory (overwrites any current bookmark)
 * -r	Remove bookmark
 * -p	Print bookmark path (with subdirectories)
+* -h	Show help
 
 $ to
 >print all bookmarks
