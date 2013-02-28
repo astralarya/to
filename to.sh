@@ -165,8 +165,8 @@ fi
 
 function _to_help {
     "$TO_ECHO" "Usage: to [OPTION] [BOOKMARK]
-Set the current working directory to a saved bookmark,
-or create such a bookmark
+Set the current working directory to a saved bookmark, or create
+such a bookmark.
 
 Options
   -b	Add a new bookmark for current directory (overwrites any current bookmark)
