@@ -50,9 +50,16 @@ function to {
         return 0
     elif [ "$1" = "-p" ]
     then
-        # print path of bookmark
-        "$TO_ECHO" "$(_to_reldir "$2")"
-        return 0
+        local reldir="$(_to_reldir "$2")"
+        if [ -d "$reldir" ]
+        then
+            # print path of bookmark
+            "$TO_ECHO" "$reldir"
+            return 0
+        else
+            "$TO_ECHO" "$2 does not refer to a directory"
+            return 1
+        fi
     elif [ "$1" = "-b" ]
     then
         # add bookmark
@@ -78,6 +85,7 @@ function to {
                 "$TO_ECHO" "$name|$path" >> "$TO_BOOKMARK_FILE"
             else
                 "$TO_ECHO" "$3 does not refer to a directory"
+                return 1
             fi
         else
             "$TO_ECHO" "$name|$PWD" >> "$TO_BOOKMARK_FILE"
@@ -96,10 +104,19 @@ function to {
     local todir="$(_to_dir "$bookmark")"
     if [ "$todir" ]
     then
-        "$TO_CD" "$(_to_reldir "$1")"
+        local reldir="$(_to_reldir "$1")"
+        if [ -d "$reldir" ]
+        then
+            "$TO_CD" "$reldir"
+        else
+            "$TO_ECHO" "$1 does not refer to a directory"
+            return 1
+        fi
     else
         "$TO_ECHO" "No shortcut: $bookmark"
+        return 1
     fi
+    return 0
 }
 
 
