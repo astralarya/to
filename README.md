@@ -11,7 +11,7 @@ Shells currently supported are bash and zsh.  Other shells may be compatible, bu
 
 Source to.sh in your shell's initialization file.
 
-For more details see https://github.com/resultsreturned/to/wiki
+This script supports several operating systems.  For more details see https://github.com/resultsreturned/to/wiki
 
 
 Usage
