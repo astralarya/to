@@ -156,9 +156,7 @@ function _to {
         fi
     fi
     # generate reply 
-    compreply="$("$TO_SED" -E 's/ /\\ /' <<< "$compreply" | "$TO_SED" -n "/^$(_to_regex "$1").*/p" | "$TO_SED" -E 's/\\ / /' )"
-    echo "$compreply" > testlog
-    echo "$compreply"
+    "$TO_SED" -E 's/ /\\ /' <<< "$compreply" | "$TO_SED" -n "/^$(_to_regex "$1").*/p" | "$TO_SED" -E 's/\\ / /' 
 }
 
 # tab completion bash
