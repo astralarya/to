@@ -170,11 +170,22 @@ function _to_bash {
     COMPREPLY=( $(_to "$cur" "$prev") )
 }
 
+# tab completion zsh
+function _to_zsh {
+    # get components
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    # call generic tab completion function
+    local IFS='
+'
+    COMPREPLY=( $(_to "$cur" "$prev" | "$TO_SED" -E 's/ /\\ /' ) )
+}
+
 # setup tab completion
 if [ "$ZSH_VERSION" ]
 then
     \autoload -U +X bashcompinit && \bashcompinit
-    \complete -o nospace -F _to_bash to
+    \complete -o nospace -F _to_zsh to
 else
     \complete -o filenames -o nospace -F _to_bash to
 fi
