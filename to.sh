@@ -155,7 +155,7 @@ function _to {
             compreply="$(_to_bookmarks "\/")"$'\n'"$compreply"
         fi
     fi
-    # generate reply and escape spaces
+    # generate reply 
     "$TO_SED" -n "/^$(_to_regex "$1").*/p"  <<<"$compreply"
 }
 
@@ -165,6 +165,8 @@ function _to_bash {
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
     # call generic tab completion function
+    local IFS='
+'
     COMPREPLY=( $(_to "$cur" "$prev") )
 }
 
