@@ -22,30 +22,32 @@ Options
 * -p	Print bookmark path (with subdirectories)
 * -h	Show help
 
-$ to
->print all bookmarks
+### Examples
 
-$ to foo
->go to the foo bookmark (if exists)
+print all bookmarks
+> to
 
-$ to foo/bar
->go to the directory bar in the directory foo points to (if exists)
+go to the foo bookmark (if exists)
+> to foo
 
-$ to -b foo
->set the foo bookmark to the current directory
+go to the directory bar in the directory foo points to (if exists)
+> to foo/bar
 
-$ to -b
->create a bookmark with the name of the current directory pointing to it
+set the foo bookmark to the current directory
+> to -b foo
 
-$ to -r foo
->remove the foo bookmark
+create a bookmark with the name of the current directory pointing to it
+> to -b
 
-$ to -p foo
->print the path of the foo bookmark
+remove the foo bookmark
+> to -r foo
 
-You can also manually edit the $TO_BOOKMARKS file (defined in to.sh, default ~/.bookmarks)
+print the path of the foo bookmark
+> to -p foo
+
+You can also manually edit the $TO_BOOKMARKS file (defined in `to.sh`, default `~/.bookmarks`)
 The syntax is:
->bookmarkname|/path/to/bookmark
+> bookmarkname|/path/to/bookmark
 
 
 ## Dependencies
