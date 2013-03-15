@@ -1,11 +1,9 @@
-to
-==
+# to
 
 **to** - A simple script for bookmarking directory locations in POSIX-like systems with tab completion
 
 
-Installation
-============
+## Installation
 
 Shells currently supported are bash and zsh.  Other shells may be compatible, but they have not been tested.
 
@@ -14,8 +12,7 @@ Source to.sh in your shell's initialization file.
 This script supports several operating systems.  For more details see https://github.com/resultsreturned/to/wiki
 
 
-Usage
-=====
+## Usage
 
 to [OPTION] [BOOKMARK]
 
@@ -51,8 +48,7 @@ The syntax is:
 >bookmarkname|/path/to/bookmark
 
 
-Dependencies
-============
+## Dependencies
 
 * bash or zsh
 
@@ -66,8 +62,7 @@ The following functionality should either be provided or built in:
 * basename
 * sed
 
-License
-=======
+## License
 
 to - v1.0.1
 
