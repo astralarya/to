@@ -51,13 +51,13 @@ function to {
     elif [ "$1" = "-p" ]
     then
         local reldir="$(_to_reldir "$2")"
-        if [ -d "$reldir" ]
+        if [ -e "$reldir" ]
         then
             # print path of bookmark
             "$TO_ECHO" "$reldir"
             return 0
         else
-            "$TO_ECHO" "$2 does not refer to a directory"
+            "$TO_ECHO" "$2 does not refer to a file"
             return 1
         fi
     elif [ "$1" = "-b" ]
