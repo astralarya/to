@@ -45,6 +45,9 @@ remove the foo bookmark
 print the path of the foo bookmark
 > to -p foo
 
+open up bar.cpp at the foo bookmark in vim
+> vim $(to -p foo/bar.cpp)
+
 You can also manually edit the $TO_BOOKMARKS file (defined in `to.sh`, default `~/.bookmarks`)
 The syntax is:
 > bookmarkname|/path/to/bookmark
