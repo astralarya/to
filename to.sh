@@ -207,7 +207,7 @@ such a bookmark.
 Options
   -b	Add a new bookmark for current directory (overwrites any current bookmark)
   -r	Remove bookmark
-  -p	Print bookmark path (with subdirectories)
+  -p	Print bookmark path
   -h	Show help"
 }
 
