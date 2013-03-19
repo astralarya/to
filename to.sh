@@ -145,16 +145,17 @@ function _to {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
+        local subdirs="$(_to_subdirs "$1")"
         if [ "$2" = "-p" ]
         then
-            local subdirs="$(_to_subfiles "$1")"
-        else
-            local subdirs="$(_to_subdirs "$1")"
+            local subfiles="$(_to_subfiles "$1")"
         fi
-        if [ "$subdirs" ]
+        if [ "$subdirs" -o "$subfiles" ]
         then
             # add subdirectories
             compreply="$subdirs"$'\n'"$compreply"
+            # add subfiles
+            compreply="$subfiles"$'\n'"$compreply"
         else
             # get bookmarks (with slash)
             compreply="$(_to_bookmarks "\/")"$'\n'"$compreply"
@@ -280,7 +281,7 @@ function _to_subfiles {
     if [ "$todir" ]
     then
         local reldir="$("$TO_SED" -E 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
-        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
+        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 -type f | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1/"
     fi
 }
 
