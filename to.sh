@@ -145,7 +145,12 @@ function _to {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        local subdirs="$(_to_subdirs "$1")"
+        if [ "$2" = "-p" ]
+        then
+            local subdirs="$(_to_subfiles "$1")"
+        else
+            local subdirs="$(_to_subdirs "$1")"
+        fi
         if [ "$subdirs" ]
         then
             # add subdirectories
@@ -264,6 +269,18 @@ function _to_subdirs {
     then
         local reldir="$("$TO_SED" -E 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
         "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
+    fi
+}
+
+# find the files that could be subdirectory expansions of
+# $1 word
+function _to_subfiles {
+    local bookmark="$(_to_path_head "$1")"
+    local todir="$(_to_dir "$bookmark")"
+    if [ "$todir" ]
+    then
+        local reldir="$("$TO_SED" -E 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
+        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
     fi
 }
 
