@@ -57,7 +57,7 @@ function to {
             "$TO_ECHO" "$reldir"
             return 0
         else
-            "$TO_ECHO" "$2 does not refer to a file"
+            # echo nothing to prevent strange behavior with $(to -p ...) usage
             return 1
         fi
     elif [ "$1" = "-b" ]
