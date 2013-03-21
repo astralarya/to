@@ -66,7 +66,7 @@ function to {
         local name
         if [ "$2" ]
         then
-            if [ $("$TO_SED" -En "s/(.*\/.*)/\1/p" <<< "$2") ]
+            if [ $("$TO_SED" -n "s/\(.*\/.*\)/\1/p" <<< "$2") ]
             then
                 "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
                 return 1
@@ -81,7 +81,7 @@ function to {
         then
             if [ -d "$3" ]
             then
-                local path=$("$TO_SED" -E "s/\/*$//" <<< "$3")
+                local path=$("$TO_SED" "s/\/*$//" <<< "$3")
                 "$TO_ECHO" "$name|$path" >> "$TO_BOOKMARK_FILE"
             else
                 "$TO_ECHO" "$3 does not refer to a directory"
@@ -162,7 +162,7 @@ function _to {
         fi
     fi
     # generate reply 
-    "$TO_SED" -E 's/ /\\ /' <<< "$compreply" | "$TO_SED" -n "/^$(_to_regex "$1").*/p" | "$TO_SED" -E 's/\\ / /' 
+    "$TO_SED" 's/ /\\ /' <<< "$compreply" | "$TO_SED" -n "/^$(_to_regex "$1").*/p" | "$TO_SED" 's/\\ / /' 
 }
 
 # tab completion bash
@@ -184,7 +184,7 @@ function _to_zsh {
     # call generic tab completion function
     local IFS='
 '
-    COMPREPLY=( $(_to "$cur" "$prev" | "$TO_SED" -E 's/ /\\ /' ) )
+    COMPREPLY=( $(_to "$cur" "$prev" | "$TO_SED" 's/ /\\ /' ) )
 }
 
 # setup tab completion
@@ -214,22 +214,22 @@ Options
 # Return list of bookmarks in $TO_BOOKMARK_FILE
 # $1 sed safe suffix  WARNING escape any /s
 function _to_bookmarks {
-    "$TO_SED" -En "s/(.*)\|.*/\1$1/p" "$TO_BOOKMARK_FILE"
+    "$TO_SED" -n "s/\(.*\)|.*/\1$1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the directory referred to by a bookmark
 function _to_dir {
-    "$TO_SED" -En "s/^$1\|(.*)/\1/p" "$TO_BOOKMARK_FILE"
+    "$TO_SED" -n "s/^$1|\(.*\)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the first part of the path
 function _to_path_head {
-    "$TO_SED" -En "s/^([^/]*)(\/.*)?$/\1/p" <<<"$1"
+    "$TO_SED" -n "s/^\([^/]*\)\(\/.*\)\?$/\1/p" <<<"$1"
 }
 
 # get the rest of the path
 function _to_path_tail {
-    "$TO_SED" -En "s/^[^/]*(\/.*)$/\1/p" <<<"$1"
+    "$TO_SED" -n "s/^[^/]*\(\/.*\)$/\1/p" <<<"$1"
 }
 
 # get the absolute path of an expanded bookmark/path
@@ -246,7 +246,7 @@ function _to_reldir {
 
 # remove bookmark
 function _to_rm {
-    "$TO_SED" -E "/^$1\|.*/ d" "$TO_BOOKMARK_FILE" > "$TO_BOOKMARK_FILE~"
+    "$TO_SED" "/^$1|.*/ d" "$TO_BOOKMARK_FILE" > "$TO_BOOKMARK_FILE~"
     "$TO_MV" "$TO_BOOKMARK_FILE~" "$TO_BOOKMARK_FILE"
 }
 
@@ -257,7 +257,7 @@ function _to_regex {
         # special case for root dir
         "$TO_ECHO"
     else
-        "$TO_ECHO" "$1" | "$TO_SED" -E 's/[\/&]/\\&/g'
+        "$TO_ECHO" "$1" | "$TO_SED" 's/[\/&]/\\&/g'
     fi
 }
 
@@ -268,8 +268,8 @@ function _to_subdirs {
     local todir="$(_to_dir "$bookmark")"
     if [ "$todir" ]
     then
-        local reldir="$("$TO_SED" -E 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
-        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 -type d | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1\//"
+        local reldir="$("$TO_SED" 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
+        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 -type d | "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1\//"
     fi
 }
 
@@ -280,8 +280,8 @@ function _to_subfiles {
     local todir="$(_to_dir "$bookmark")"
     if [ "$todir" ]
     then
-        local reldir="$("$TO_SED" -E 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
-        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 -type f | "$TO_SED" -E "s/^$(_to_regex "$todir")(.*)/$bookmark\1/"
+        local reldir="$("$TO_SED" 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
+        "$TO_FIND" $reldir -mindepth 1 -maxdepth 1 -type f | "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1/"
     fi
 }
 
