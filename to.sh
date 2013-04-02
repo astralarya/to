@@ -33,6 +33,15 @@ TO_SED=\sed
 ### MAIN ###
 
 function to {
+    # detect subshell nesting level
+    if [ $BASH_SUBSHELL ]
+    then
+        local subshell=$BASH_SUBSHELL
+    elif [ $ZSH_SUBSHELL ]
+    then
+        local subshell=$ZSH_SUBSHELL
+    fi
+
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_FILE" ]
     then
