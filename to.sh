@@ -162,7 +162,8 @@ function _to {
         fi
     fi
     # generate reply 
-    "$TO_SED" 's/ /\\ /' <<< "$compreply" | "$TO_SED" -n "/^$(_to_regex "$1").*/p" | "$TO_SED" 's/\\ / /' 
+    local word="$("$TO_SED" 's/\\\(.\)/\1/g' <<< "$1")"
+    "$TO_SED" 's/ /\\ /' <<< "$compreply" | "$TO_SED" -n "/^$(_to_regex "$word").*/p" | "$TO_SED" 's/\\ / /' 
 }
 
 # tab completion bash
