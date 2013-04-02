@@ -271,8 +271,8 @@ function _to_subdirs {
     then
         local reldir="$("$TO_SED" 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
         local reldir="$("$TO_FIND" "$reldir" -mindepth 1 -maxdepth 1 -type d 2> /dev/null )"
-        local status=$?
-        if [ $status = 0 ]
+        local stat=$?
+        if [ $stat = 0 ]
         then
             "$TO_ECHO" "$reldir"| "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1\//"
         fi
@@ -288,8 +288,8 @@ function _to_subfiles {
     then
         local reldir="$("$TO_SED" 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
         local reldir="$("$TO_FIND" "$reldir" -mindepth 1 -maxdepth 1 -type f 2> /dev/null )"
-        local status=$?
-        if [ $status = 0 ]
+        local stat=$?
+        if [ $stat = 0 ]
         then
             "$TO_ECHO" "$reldir"| "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1\//"
         fi
