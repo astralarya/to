@@ -133,6 +133,7 @@ function _to {
         "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
     fi
     # build reply
+    local word="$("$TO_SED" 's/\\\(.\)/\1/g' <<< "$1" | "$TO_SED" 's/\\$//' )"
     local compreply
     if [ "$2" = "-b" ]
     then
@@ -145,10 +146,10 @@ function _to {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        local subdirs="$(_to_subdirs "$1")"
+        local subdirs="$(_to_subdirs "$word")"
         if [ "$2" = "-p" ]
         then
-            local subfiles="$(_to_subfiles "$1")"
+            local subfiles="$(_to_subfiles "$word")"
         fi
         if [ "$subdirs" -o "$subfiles" ]
         then
@@ -162,7 +163,6 @@ function _to {
         fi
     fi
     # generate reply 
-    local word="$("$TO_SED" 's/\\\(.\)/\1/g' <<< "$1" | "$TO_SED" 's/\\$//' )"
     "$TO_SED" -n "/^$(_to_regex "$word").*/p" <<< "$compreply" | "$TO_SED" 's/\\ / /' 
 }
 
