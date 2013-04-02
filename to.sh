@@ -185,7 +185,7 @@ function _to_zsh {
     # call generic tab completion function
     local IFS='
 '
-    COMPREPLY=( $(_to "$cur" "$prev" | "$TO_SED" 's/ /\\ /' ) )
+    COMPREPLY=( $(_to "$cur" "$prev" | "$TO_SED" "s/[ ']/\\\\&/g" ) )
 }
 
 # setup tab completion
