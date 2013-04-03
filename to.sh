@@ -291,7 +291,7 @@ function _to_subfiles {
         local stat=$?
         if [ $stat = 0 ]
         then
-            "$TO_ECHO" "$reldir"| "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1\//"
+            "$TO_ECHO" "$reldir"| "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1/"
         fi
     fi
 }
