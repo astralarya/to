@@ -23,7 +23,7 @@ TO_BOOKMARK_DIR=~/.bookmarks
 
 ### MAIN ###
 
-function to {
+to() {
     # create empty bookmarks folder if it does not exist
     if [ ! -d "$TO_BOOKMARK_DIR" ]
     then
@@ -102,7 +102,7 @@ function to {
 # $1 = current word
 # $2 = previous word
 # Output valid completions
-function _to {
+_to() {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_DIR" ]
     then
@@ -142,7 +142,7 @@ function _to {
 }
 
 # tab completion bash
-function _to_bash {
+_to_bash() {
     # get components
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
@@ -153,7 +153,7 @@ function _to_bash {
 }
 
 # tab completion zsh
-function _to_zsh {
+_to_zsh() {
     # get components
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"
@@ -175,7 +175,7 @@ fi
 
 ### HELPER FUNCTIONS ###
 
-function _to_help {
+_to_help() {
     \echo "Usage: to [OPTION] [BOOKMARK]
 Set the current working directory to a saved bookmark, or create
 such a bookmark.
@@ -189,27 +189,27 @@ Options
 
 # Return list of bookmarks in $TO_BOOKMARK_FILE
 # $1 sed safe suffix  WARNING escape any /s
-function _to_bookmarks {
+_to_bookmarks() {
     \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f\n"
 }
 
 # get the directory referred to by a bookmark
-function _to_dir {
+_to_dir() {
     \sed -n "s/^$1|\(.*\)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the first part of the path
-function _to_path_head {
+_to_path_head() {
     \sed -n "s/^\([^/]*\)\(\/.*\)\?$/\1/p" <<<"$1"
 }
 
 # get the rest of the path
-function _to_path_tail {
+_to_path_tail() {
     \sed -n "s/^[^/]*\(\/.*\)$/\1/p" <<<"$1"
 }
 
 # get the absolute path of an expanded bookmark/path
-function _to_reldir {
+_to_reldir() {
     local todir="$(_to_dir "$(_to_path_head "$1")" )"
     if [ "$todir" = "/" ]
     then
@@ -220,14 +220,8 @@ function _to_reldir {
     fi
 }
 
-# remove bookmark
-function _to_rm {
-    \sed "/^$1|.*/ d" "$TO_BOOKMARK_FILE" > "$TO_BOOKMARK_FILE~"
-    \mv "$TO_BOOKMARK_FILE~" "$TO_BOOKMARK_FILE"
-}
-
 # clean input for sed search
-function _to_regex {
+_to_regex() {
     if [ "$1" = "/" ]
     then
         # special case for root dir
@@ -239,7 +233,7 @@ function _to_regex {
 
 # find the directories that could be subdirectory expansions of
 # $1 word
-function _to_subdirs {
+_to_subdirs() {
     local bookmark="$(_to_path_head "$1")"
     local todir="$(_to_dir "$bookmark")"
     if [ "$todir" ]
@@ -256,7 +250,7 @@ function _to_subdirs {
 
 # find the files that could be subdirectory expansions of
 # $1 word
-function _to_subfiles {
+_to_subfiles() {
     local bookmark="$(_to_path_head "$1")"
     local todir="$(_to_dir "$bookmark")"
     if [ "$todir" ]
