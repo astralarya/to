@@ -33,9 +33,9 @@ to() {
     if [ -z "$1" ]
     then
         # show bookmarks
-        for link in $TO_BOOKMARK_DIR/*
+        for link in $(_to_bookmarks)
         do
-            echo "$(\basename $link)" '->' "$(\readlink $link)"
+            echo "$link" '->' "$(\readlink "$TO_BOOKMARK_DIR/$link")"
         done
         return 0
     elif [ "$1" = "-h" ]
