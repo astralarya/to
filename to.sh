@@ -99,8 +99,9 @@ to() {
 ### TAB COMPLETION ###
 
 # tab completion generic
-# $1 = current word
-# $2 = previous word
+# $1 = ultimate word (current)
+# $2 = penultimate word
+# $3 = antepenultimate word
 # Output valid completions
 _to() {
     # create empty bookmarks file if it does not exist
@@ -110,7 +111,10 @@ _to() {
     fi
     # build reply
     local compreply
-    if [ "$2" = "-b" ]
+    if [ "$3" = "-b" ]
+    then
+        compreply="$(\find "$(\dirname "${1}0")" -mindepth 1 -maxdepth 1 -type d)"
+    elif [ "$2" = "-b" ]
     then
         # add current directory
         compreply="$(\basename "$PWD" )"$'\n'"$compreply"
@@ -144,23 +148,33 @@ _to() {
 # tab completion bash
 _to_bash() {
     # get components
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local len="${#COMP_WORDS[@]}"
+    local one="${COMP_WORDS[COMP_CWORD]}"
+    local two="${COMP_WORDS[COMP_CWORD-1]}"
+    if [ $len -gt 2 ]
+    then
+       local three="${COMP_WORDS[COMP_CWORD-2]}"
+    fi
     # call generic tab completion function
     local IFS='
 '
-    COMPREPLY=( $(_to "$cur" "$prev") )
+    COMPREPLY=( $(_to "$one" "$two" "$three") )
 }
 
 # tab completion zsh
 _to_zsh() {
     # get components
-    local cur="${COMP_WORDS[COMP_CWORD]}"
-    local prev="${COMP_WORDS[COMP_CWORD-1]}"
+    local len="${#COMP_WORDS[@]}"
+    local one="${COMP_WORDS[COMP_CWORD]}"
+    local two="${COMP_WORDS[COMP_CWORD-1]}"
+    if [ $len -gt 2 ]
+    then
+       local three="${COMP_WORDS[COMP_CWORD-2]}"
+    fi
     # call generic tab completion function
     local IFS='
 '
-    COMPREPLY=( $(_to "$cur" "$prev" | \sed "s/[ ']/\\\\&/g" ) )
+    COMPREPLY=( $(_to "$one" "$two" "$three") )
 }
 
 # setup tab completion
