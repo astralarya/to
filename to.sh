@@ -44,15 +44,9 @@ to() {
         return 0
     elif [ "$1" = "-p" ]
     then
-        if [ -e "$TO_BOOKMARK_DIR/$2" ]
-        then
-            # print path of bookmark
-            \echo "$(\readlink -f "$TO_BOOKMARK_DIR/$2")"
-            return 0
-        else
-            # echo nothing to prevent strange behavior with $(to -p ...) usage
-            return 1
-        fi
+        # print path of bookmark
+        \echo "$(\readlink -f "$TO_BOOKMARK_DIR/$2")"
+        return 0
     elif [ "$1" = "-b" ]
     then
         if [ "$2" ]
