@@ -73,7 +73,7 @@ The following functionality should either be provided or built in:
 
 ## License
 
-to - v1.3.1
+to - v1.3.2
 
 Copyright (C) 2013  Mara Kim, Philipp Adolf, Max Thrun
 
