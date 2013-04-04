@@ -121,10 +121,10 @@ _to() {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        local subdirs="$(_to_subdirs "$word")"
+        local subdirs="$(_to_subdirs "$1")"
         if [ "$2" = "-p" ]
         then
-            local subfiles="$(_to_subfiles "$word")"
+            local subfiles="$(_to_subfiles "$1")"
         fi
         if [ "$subdirs" -o "$subfiles" ]
         then
@@ -134,11 +134,11 @@ _to() {
             compreply="$subfiles"$'\n'"$compreply"
         else
             # get bookmarks (with slash)
-            compreply="$(_to_bookmarks "\/")"$'\n'"$compreply"
+            compreply="$(_to_bookmarks "/")"$'\n'"$compreply"
         fi
     fi
     # generate reply 
-    \sed -n "/^$(_to_regex "$word").*/p" <<< "$compreply" | \sed 's/\\ / /' 
+    \sed -n "/^$(_to_regex "$1").*/p" <<< "$compreply"
 }
 
 # tab completion bash
@@ -188,14 +188,9 @@ Options
 }
 
 # Return list of bookmarks in $TO_BOOKMARK_FILE
-# $1 sed safe suffix  WARNING escape any /s
+# $1 suffix
 _to_bookmarks() {
-    \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f\n"
-}
-
-# get the directory referred to by a bookmark
-_to_dir() {
-    \sed -n "s/^$1|\(.*\)/\1/p" "$TO_BOOKMARK_FILE"
+    \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f$1\n"
 }
 
 # get the first part of the path
@@ -206,18 +201,6 @@ _to_path_head() {
 # get the rest of the path
 _to_path_tail() {
     \sed -n "s/^[^/]*\(\/.*\)$/\1/p" <<<"$1"
-}
-
-# get the absolute path of an expanded bookmark/path
-_to_reldir() {
-    local todir="$(_to_dir "$(_to_path_head "$1")" )"
-    if [ "$todir" = "/" ]
-    then
-        # special case for root dir
-        \echo "$(_to_path_tail "$1")"
-    else
-        \echo "$todir$(_to_path_tail "$1")"
-    fi
 }
 
 # clean input for sed search
@@ -234,18 +217,7 @@ _to_regex() {
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    local bookmark="$(_to_path_head "$1")"
-    local todir="$(_to_dir "$bookmark")"
-    if [ "$todir" ]
-    then
-        local reldir="$(\sed 's/\\ / /' <<<"$(\dirname "$(_to_reldir "$1")\*")")"
-        local reldir="$(\find "$reldir" -mindepth 1 -maxdepth 1 -type d 2> /dev/null )"
-        local stat=$?
-        if [ $stat = 0 ]
-        then
-            \echo "$reldir"| \sed "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1\//"
-        fi
-    fi
+    \find "$TO_BOOKMARK_DIR/$1" -mindepth 1 -maxdepth 1 -type d 2> /dev/null
 }
 
 # find the files that could be subdirectory expansions of
