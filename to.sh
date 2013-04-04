@@ -19,21 +19,21 @@
 
 ### SETTINGS ###
 
-TO_BOOKMARK_FOLDER=~/.bookmarks
+TO_BOOKMARK_DIR=~/.bookmarks
 
 ### MAIN ###
 
 function to {
     # create empty bookmarks folder if it does not exist
-    if [ ! -d "$TO_BOOKMARK_FOLDER" ]
+    if [ ! -d "$TO_BOOKMARK_DIR" ]
     then
-        \mkdir "$TO_BOOKMARK_FOLDER"
+        \mkdir "$TO_BOOKMARK_DIR"
     fi
 
     if [ -z "$1" ]
     then
         # show bookmarks
-        for link in $TO_BOOKMARK_FOLDER/*
+        for link in $TO_BOOKMARK_DIR/*
         do
             echo "$(\basename $link)" '->' "$(\readlink $link)"
         done
@@ -44,10 +44,10 @@ function to {
         return 0
     elif [ "$1" = "-p" ]
     then
-        if [ -e "$TO_BOOKMARK_FOLDER/$2" ]
+        if [ -e "$TO_BOOKMARK_DIR/$2" ]
         then
             # print path of bookmark
-            \echo "$(\readlink -f "$TO_BOOKMARK_FOLDER/$2")"
+            \echo "$(\readlink -f "$TO_BOOKMARK_DIR/$2")"
             return 0
         else
             # echo nothing to prevent strange behavior with $(to -p ...) usage
@@ -55,39 +55,39 @@ function to {
         fi
     elif [ "$1" = "-b" ]
     then
-        if [ -e "$TO_BOOKMARK_FOLDER/$2" ]
+        if [ -e "$TO_BOOKMARK_DIR/$2" ]
         then
             # remove bookmark
-            \rm "$TO_BOOKMARK_FOLDER/$2"
+            \rm "$TO_BOOKMARK_DIR/$2"
         fi
         # add bookmark
         if [ "$3" ]
         then
             if [ -d "$3" ]
             then
-                \ln -s "$3" "$TO_BOOKMARK_FOLDER/$2"
+                \ln -s "$3" "$TO_BOOKMARK_DIR/$2"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
             fi
         else
-            \ln -s "$PWD" "$TO_BOOKMARK_FOLDER/$2"
+            \ln -s "$PWD" "$TO_BOOKMARK_DIR/$2"
         fi
         return 0
     elif [ "$1" = "-r" ]
     then
-        if [ -e "$TO_BOOKMARK_FOLDER/$2" ]
+        if [ -e "$TO_BOOKMARK_DIR/$2" ]
         then
             # remove bookmark
-            \rm "$TO_BOOKMARK_FOLDER/$2"
+            \rm "$TO_BOOKMARK_DIR/$2"
         fi
         return 0
     fi
 
     # go to bookmark
-    if [ -d "$TO_BOOKMARK_FOLDER/$1" ]
+    if [ -d "$TO_BOOKMARK_DIR/$1" ]
     then
-        \cd -P "$TO_BOOKMARK_FOLDER/$1"
+        \cd -P "$TO_BOOKMARK_DIR/$1"
     else
         \echo "Invalid shortcut: $1"
         return 1
@@ -104,12 +104,11 @@ function to {
 # Output valid completions
 function _to {
     # create empty bookmarks file if it does not exist
-    if [ ! -e "$TO_BOOKMARK_FILE" ]
+    if [ ! -e "$TO_BOOKMARK_DIR" ]
     then
-        \echo -n > "$TO_BOOKMARK_FILE"
+        \mkdir "$TO_BOOKMARK_DIR"
     fi
     # build reply
-    local word="$(\sed 's/\\\(.\)/\1/g' <<< "$1" | \sed 's/\\$//' )"
     local compreply
     if [ "$2" = "-b" ]
     then
@@ -191,7 +190,7 @@ Options
 # Return list of bookmarks in $TO_BOOKMARK_FILE
 # $1 sed safe suffix  WARNING escape any /s
 function _to_bookmarks {
-    \sed -n "s/\(.*\)|.*/\1$1/p" "$TO_BOOKMARK_FILE"
+    \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f\n"
 }
 
 # get the directory referred to by a bookmark
