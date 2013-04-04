@@ -14,7 +14,7 @@ This script supports several operating systems.  For more details see https://gi
 
 ## Usage
 
-to [OPTION] [BOOKMARK]
+to [OPTION] [BOOKMARK] [DEST]
 
 Options
 * -b	Add a new bookmark for current directory (overwrites any current bookmark)
