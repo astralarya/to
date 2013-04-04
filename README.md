@@ -30,14 +30,17 @@ print all bookmarks
 go to the foo bookmark (if exists)
 > to foo
 
-go to the directory bar in the directory foo points to (if exists)
+go to the directory bar inside the directory foo points to (if exists)
 > to foo/bar
+
+create a bookmark with the name of the current directory pointing to it
+> to -b
 
 set the foo bookmark to the current directory
 > to -b foo
 
-create a bookmark with the name of the current directory pointing to it
-> to -b
+set the foo bookmark to the /bar/baz directory
+> to -b foo /bar/baz
 
 remove the foo bookmark
 > to -r foo
