@@ -198,11 +198,6 @@ _to_path_head() {
     \sed -n "s/^\([^/]*\)\(\/.*\)\?$/\1/p" <<<"$1"
 }
 
-# get the rest of the path
-_to_path_tail() {
-    \sed -n "s/^[^/]*\(\/.*\)$/\1/p" <<<"$1"
-}
-
 # clean input for sed search
 _to_regex() {
     if [ "$1" = "/" ]
