@@ -223,12 +223,12 @@ _to_regex() {
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    \find "$(\readlink "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null | \sed "s@^$(\readlink "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")@$(_to_path_head "$1")@"
+    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0")")" -mindepth 1 -maxdepth 1 -type d | \sed "s@^$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")@$(_to_path_head "$1")@"
 }
 
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    \find "$TO_BOOKMARK_DIR/$1" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s@^$TO_BOOKMARK_DIR/@@"
+    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0")")" -mindepth 1 -maxdepth 1 -type f | \sed "s@^$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")@$(_to_path_head "$1")@"
 }
 
