@@ -61,9 +61,11 @@ which contains symbolic links that represent your bookmarks.
 
 The following functionality should either be provided or built in:
 * cd
-* mv
+* ln
+* readlink
+* mkdir
+* rm
 * echo
-* cat
 * find
 * dirname
 * basename
