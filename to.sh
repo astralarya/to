@@ -19,21 +19,24 @@
 
 ### SETTINGS ###
 
-TO_BOOKMARK_FILE=~/.bookmarks
+TO_BOOKMARK_FOLDER=~/.bookmarks
 
 ### MAIN ###
 
 function to {
-    # create empty bookmarks file if it does not exist
-    if [ ! -e "$TO_BOOKMARK_FILE" ]
+    # create empty bookmarks folder if it does not exist
+    if [ ! -d "$TO_BOOKMARK_FOLDER" ]
     then
-        \echo -n > "$TO_BOOKMARK_FILE"
+        \mkdir "$TO_BOOKMARK_FOLDER"
     fi
 
     if [ -z "$1" ]
     then
         # show bookmarks
-        \cat "$TO_BOOKMARK_FILE"
+        for link in $TO_BOOKMARK_FOLDER/*
+        do
+            echo "$(\basename $link)" '->' "$(\readlink $link)"
+        done
         return 0
     elif [ "$1" = "-h" ]
     then
@@ -41,11 +44,10 @@ function to {
         return 0
     elif [ "$1" = "-p" ]
     then
-        local reldir="$(_to_reldir "$2")"
-        if [ -e "$reldir" ]
+        if [ -e "$TO_BOOKMARK_FOLDER/$2" ]
         then
             # print path of bookmark
-            \echo "$reldir"
+            \echo "$(\readlink -f "$TO_BOOKMARK_FOLDER/$2")"
             return 0
         else
             # echo nothing to prevent strange behavior with $(to -p ...) usage
@@ -53,58 +55,41 @@ function to {
         fi
     elif [ "$1" = "-b" ]
     then
-        # add bookmark
-        local name
-        if [ "$2" ]
+        if [ -e "$TO_BOOKMARK_FOLDER/$2" ]
         then
-            if [ $(\sed -n "s/\(.*\/.*\)/\1/p" <<< "$2") ]
-            then
-                \echo "bookmark name may not contain forward slashes" >&2
-                return 1
-            fi
-            name="$2"
-        else
-            name="$(\basename "$PWD")"
+            # remove bookmark
+            \rm "$TO_BOOKMARK_FOLDER/$2"
         fi
         # add bookmark
-        _to_rm "$name"
         if [ "$3" ]
         then
             if [ -d "$3" ]
             then
-                local path=$(\sed "s/\/*$//" <<< "$3")
-                \echo "$name|$path" >> "$TO_BOOKMARK_FILE"
+                \ln -s "$3" "$TO_BOOKMARK_FOLDER/$2"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
             fi
         else
-            \echo "$name|$PWD" >> "$TO_BOOKMARK_FILE"
+            \ln -s "$PWD" "$TO_BOOKMARK_FOLDER/$2"
         fi
         return 0
     elif [ "$1" = "-r" ]
     then
-        # remove bookmark
-        _to_rm "$2"
+        if [ -e "$TO_BOOKMARK_FOLDER/$2" ]
+        then
+            # remove bookmark
+            \rm "$TO_BOOKMARK_FOLDER/$2"
+        fi
         return 0
     fi
 
     # go to bookmark
-    local bookmark="$(_to_path_head "$1")"
-    local extra="$(_to_path_tail "$1")"
-    local todir="$(_to_dir "$bookmark")"
-    if [ "$todir" ]
+    if [ -d "$TO_BOOKMARK_FOLDER/$1" ]
     then
-        local reldir="$(_to_reldir "$1")"
-        if [ -d "$reldir" ]
-        then
-            \cd "$reldir"
-        else
-            \echo "$1 does not refer to a directory"
-            return 1
-        fi
+        \cd -P "$TO_BOOKMARK_FOLDER/$1"
     else
-        \echo "No shortcut: $bookmark"
+        \echo "Invalid shortcut: $1"
         return 1
     fi
     return 0
