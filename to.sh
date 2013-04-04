@@ -195,7 +195,7 @@ _to_bookmarks() {
 
 # get the first part of the path
 _to_path_head() {
-    \sed -n "s/^\([^/]*\)\(\/.*\)\?$/\1/p" <<<"$1"
+    \sed -n 's@^\(\(\\.\|[^/]\)*\)\(/.*\)\?$@\1@p' <<<"$1"
 }
 
 # clean input for sed search
