@@ -190,12 +190,12 @@ fi
 ### HELPER FUNCTIONS ###
 
 _to_help() {
-    \echo "Usage: to [OPTION] [BOOKMARK]
+    \echo "Usage: to [OPTION] [BOOKMARK] [DEST]
 Set the current working directory to a saved bookmark, or create
 such a bookmark.
 
 Options
-  -b	Add a new bookmark for current directory (overwrites any current bookmark)
+  -b	Add a new bookmark (overwrites any current bookmark)
   -r	Remove bookmark
   -p	Print bookmark path
   -h	Show help"
