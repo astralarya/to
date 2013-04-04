@@ -68,7 +68,7 @@ The following functionality should either be provided or built in:
 
 ## License
 
-to - v1.2.2
+to - v1.3
 
 Copyright (C) 2013  Mara Kim, Philipp Adolf, Max Thrun
 
