@@ -129,6 +129,8 @@ _to() {
         if [ "$2" = "-p" ]
         then
             local subfiles="$(_to_subfiles "$1")"
+        else
+            local subfiles=""
         fi
         if [ "$subdirs" -o "$subfiles" ]
         then
@@ -154,6 +156,8 @@ _to_bash() {
     if [ $len -gt 2 ]
     then
        local three="${COMP_WORDS[COMP_CWORD-2]}"
+    else
+       local three=""
     fi
     # call generic tab completion function
     local IFS='
@@ -170,6 +174,8 @@ _to_zsh() {
     if [ $len -gt 2 ]
     then
        local three="${COMP_WORDS[COMP_CWORD-2]}"
+    else
+       local three=""
     fi
     # call generic tab completion function
     local IFS='
