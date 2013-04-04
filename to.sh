@@ -55,17 +55,23 @@ to() {
         fi
     elif [ "$1" = "-b" ]
     then
-        if [ -e "$TO_BOOKMARK_DIR/$2" ]
+        if [ "$2" ]
+        then
+            local name="$2"
+        else
+            local name="$(\basename "$PWD")"
+        fi
+        if [ -e "$TO_BOOKMARK_DIR/$name" ]
         then
             # remove bookmark
-            \rm "$TO_BOOKMARK_DIR/$2"
+            \rm "$TO_BOOKMARK_DIR/$name"
         fi
         # add bookmark
         if [ "$3" ]
         then
             if [ -d "$3" ]
             then
-                \ln -s "$3" "$TO_BOOKMARK_DIR/$2"
+                \ln -s "$3" "$TO_BOOKMARK_DIR/$name"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
@@ -217,23 +223,12 @@ _to_regex() {
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    \find "$TO_BOOKMARK_DIR/$1" -mindepth 1 -maxdepth 1 -type d 2> /dev/null
+    \find "$TO_BOOKMARK_DIR/$1" -mindepth 1 -maxdepth 1 -type d 2> /dev/null | \sed "s@^$TO_BOOKMARK_DIR/@@"
 }
 
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    local bookmark="$(_to_path_head "$1")"
-    local todir="$(_to_dir "$bookmark")"
-    if [ "$todir" ]
-    then
-        local reldir="$(\sed 's/\\ / /' <<<"$(\dirname "$(_to_reldir "$1")\*")")"
-        local reldir="$(\find "$reldir" -mindepth 1 -maxdepth 1 -type f 2> /dev/null )"
-        local stat=$?
-        if [ $stat = 0 ]
-        then
-            \echo "$reldir"| \sed "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1/"
-        fi
-    fi
+    \find "$TO_BOOKMARK_DIR/$1" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s@^$TO_BOOKMARK_DIR/@@"
 }
 
