@@ -48,9 +48,8 @@ print the path of the foo bookmark
 open up bar.cpp at the foo bookmark in vim
 > vim $(to -p foo/bar.cpp)
 
-You can also manually edit the $TO_BOOKMARKS file (defined in `to.sh`, default `~/.bookmarks`)
-The syntax is:
-> bookmarkname|/path/to/bookmark
+You can also manually edit the $TO_BOOKMARK_DIR folder (defined in `to.sh`, default `~/.bookmarks`)
+which contains symbolic links that represent your bookmarks.
 
 
 ## Dependencies
