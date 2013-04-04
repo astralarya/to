@@ -191,9 +191,9 @@ fi
 
 _to_help() {
     \echo "Usage: to [OPTION] [BOOKMARK] [DEST]
-Set the current working directory to a saved bookmark, or create
-such a bookmark.
-
+Set the current working directory to a saved bookmark or subdirectory,
+or create such a bookmark.
+To view bookmarks, execute with no parameters
 Options
   -b	Add a new bookmark (overwrites any current bookmark)
   -r	Remove bookmark
