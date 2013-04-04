@@ -20,15 +20,6 @@
 ### SETTINGS ###
 
 TO_BOOKMARK_FILE=~/.bookmarks
-TO_ECHO=\echo
-TO_CD=\cd
-TO_MV=\mv
-TO_CAT=\cat
-TO_FIND=\find
-TO_DIRNAME=\dirname
-TO_BASENAME=\basename
-TO_SED=\sed
-
 
 ### MAIN ###
 
@@ -36,13 +27,13 @@ function to {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_FILE" ]
     then
-        "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
+        \echo -n > "$TO_BOOKMARK_FILE"
     fi
 
     if [ -z "$1" ]
     then
         # show bookmarks
-        "$TO_CAT" "$TO_BOOKMARK_FILE"
+        \cat "$TO_BOOKMARK_FILE"
         return 0
     elif [ "$1" = "-h" ]
     then
@@ -54,7 +45,7 @@ function to {
         if [ -e "$reldir" ]
         then
             # print path of bookmark
-            "$TO_ECHO" "$reldir"
+            \echo "$reldir"
             return 0
         else
             # echo nothing to prevent strange behavior with $(to -p ...) usage
@@ -66,14 +57,14 @@ function to {
         local name
         if [ "$2" ]
         then
-            if [ $("$TO_SED" -n "s/\(.*\/.*\)/\1/p" <<< "$2") ]
+            if [ $(\sed -n "s/\(.*\/.*\)/\1/p" <<< "$2") ]
             then
-                "$TO_ECHO" "bookmark name may not contain forward slashes" >&2
+                \echo "bookmark name may not contain forward slashes" >&2
                 return 1
             fi
             name="$2"
         else
-            name="$("$TO_BASENAME" "$PWD")"
+            name="$(\basename "$PWD")"
         fi
         # add bookmark
         _to_rm "$name"
@@ -81,14 +72,14 @@ function to {
         then
             if [ -d "$3" ]
             then
-                local path=$("$TO_SED" "s/\/*$//" <<< "$3")
-                "$TO_ECHO" "$name|$path" >> "$TO_BOOKMARK_FILE"
+                local path=$(\sed "s/\/*$//" <<< "$3")
+                \echo "$name|$path" >> "$TO_BOOKMARK_FILE"
             else
-                "$TO_ECHO" "$3 does not refer to a directory"
+                \echo "$3 does not refer to a directory"
                 return 1
             fi
         else
-            "$TO_ECHO" "$name|$PWD" >> "$TO_BOOKMARK_FILE"
+            \echo "$name|$PWD" >> "$TO_BOOKMARK_FILE"
         fi
         return 0
     elif [ "$1" = "-r" ]
@@ -107,13 +98,13 @@ function to {
         local reldir="$(_to_reldir "$1")"
         if [ -d "$reldir" ]
         then
-            "$TO_CD" "$reldir"
+            \cd "$reldir"
         else
-            "$TO_ECHO" "$1 does not refer to a directory"
+            \echo "$1 does not refer to a directory"
             return 1
         fi
     else
-        "$TO_ECHO" "No shortcut: $bookmark"
+        \echo "No shortcut: $bookmark"
         return 1
     fi
     return 0
@@ -130,15 +121,15 @@ function _to {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_FILE" ]
     then
-        "$TO_ECHO" -n > "$TO_BOOKMARK_FILE"
+        \echo -n > "$TO_BOOKMARK_FILE"
     fi
     # build reply
-    local word="$("$TO_SED" 's/\\\(.\)/\1/g' <<< "$1" | "$TO_SED" 's/\\$//' )"
+    local word="$(\sed 's/\\\(.\)/\1/g' <<< "$1" | \sed 's/\\$//' )"
     local compreply
     if [ "$2" = "-b" ]
     then
         # add current directory
-        compreply="$("$TO_BASENAME" "$PWD" )"$'\n'"$compreply"
+        compreply="$(\basename "$PWD" )"$'\n'"$compreply"
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     elif [ "$2" = "-r" ]
@@ -163,7 +154,7 @@ function _to {
         fi
     fi
     # generate reply 
-    "$TO_SED" -n "/^$(_to_regex "$word").*/p" <<< "$compreply" | "$TO_SED" 's/\\ / /' 
+    \sed -n "/^$(_to_regex "$word").*/p" <<< "$compreply" | \sed 's/\\ / /' 
 }
 
 # tab completion bash
@@ -185,7 +176,7 @@ function _to_zsh {
     # call generic tab completion function
     local IFS='
 '
-    COMPREPLY=( $(_to "$cur" "$prev" | "$TO_SED" "s/[ ']/\\\\&/g" ) )
+    COMPREPLY=( $(_to "$cur" "$prev" | \sed "s/[ ']/\\\\&/g" ) )
 }
 
 # setup tab completion
@@ -201,7 +192,7 @@ fi
 ### HELPER FUNCTIONS ###
 
 function _to_help {
-    "$TO_ECHO" "Usage: to [OPTION] [BOOKMARK]
+    \echo "Usage: to [OPTION] [BOOKMARK]
 Set the current working directory to a saved bookmark, or create
 such a bookmark.
 
@@ -215,22 +206,22 @@ Options
 # Return list of bookmarks in $TO_BOOKMARK_FILE
 # $1 sed safe suffix  WARNING escape any /s
 function _to_bookmarks {
-    "$TO_SED" -n "s/\(.*\)|.*/\1$1/p" "$TO_BOOKMARK_FILE"
+    \sed -n "s/\(.*\)|.*/\1$1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the directory referred to by a bookmark
 function _to_dir {
-    "$TO_SED" -n "s/^$1|\(.*\)/\1/p" "$TO_BOOKMARK_FILE"
+    \sed -n "s/^$1|\(.*\)/\1/p" "$TO_BOOKMARK_FILE"
 }
 
 # get the first part of the path
 function _to_path_head {
-    "$TO_SED" -n "s/^\([^/]*\)\(\/.*\)\?$/\1/p" <<<"$1"
+    \sed -n "s/^\([^/]*\)\(\/.*\)\?$/\1/p" <<<"$1"
 }
 
 # get the rest of the path
 function _to_path_tail {
-    "$TO_SED" -n "s/^[^/]*\(\/.*\)$/\1/p" <<<"$1"
+    \sed -n "s/^[^/]*\(\/.*\)$/\1/p" <<<"$1"
 }
 
 # get the absolute path of an expanded bookmark/path
@@ -239,16 +230,16 @@ function _to_reldir {
     if [ "$todir" = "/" ]
     then
         # special case for root dir
-        "$TO_ECHO" "$(_to_path_tail "$1")"
+        \echo "$(_to_path_tail "$1")"
     else
-        "$TO_ECHO" "$todir$(_to_path_tail "$1")"
+        \echo "$todir$(_to_path_tail "$1")"
     fi
 }
 
 # remove bookmark
 function _to_rm {
-    "$TO_SED" "/^$1|.*/ d" "$TO_BOOKMARK_FILE" > "$TO_BOOKMARK_FILE~"
-    "$TO_MV" "$TO_BOOKMARK_FILE~" "$TO_BOOKMARK_FILE"
+    \sed "/^$1|.*/ d" "$TO_BOOKMARK_FILE" > "$TO_BOOKMARK_FILE~"
+    \mv "$TO_BOOKMARK_FILE~" "$TO_BOOKMARK_FILE"
 }
 
 # clean input for sed search
@@ -256,9 +247,9 @@ function _to_regex {
     if [ "$1" = "/" ]
     then
         # special case for root dir
-        "$TO_ECHO"
+        \echo
     else
-        "$TO_ECHO" "$1" | "$TO_SED" 's/[\/&]/\\&/g'
+        \echo "$1" | \sed 's/[\/&]/\\&/g'
     fi
 }
 
@@ -269,12 +260,12 @@ function _to_subdirs {
     local todir="$(_to_dir "$bookmark")"
     if [ "$todir" ]
     then
-        local reldir="$("$TO_SED" 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
-        local reldir="$("$TO_FIND" "$reldir" -mindepth 1 -maxdepth 1 -type d 2> /dev/null )"
+        local reldir="$(\sed 's/\\ / /' <<<"$(\dirname "$(_to_reldir "$1")\*")")"
+        local reldir="$(\find "$reldir" -mindepth 1 -maxdepth 1 -type d 2> /dev/null )"
         local stat=$?
         if [ $stat = 0 ]
         then
-            "$TO_ECHO" "$reldir"| "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1\//"
+            \echo "$reldir"| \sed "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1\//"
         fi
     fi
 }
@@ -286,12 +277,12 @@ function _to_subfiles {
     local todir="$(_to_dir "$bookmark")"
     if [ "$todir" ]
     then
-        local reldir="$("$TO_SED" 's/\\ / /' <<<"$("$TO_DIRNAME" "$(_to_reldir "$1")\*")")"
-        local reldir="$("$TO_FIND" "$reldir" -mindepth 1 -maxdepth 1 -type f 2> /dev/null )"
+        local reldir="$(\sed 's/\\ / /' <<<"$(\dirname "$(_to_reldir "$1")\*")")"
+        local reldir="$(\find "$reldir" -mindepth 1 -maxdepth 1 -type f 2> /dev/null )"
         local stat=$?
         if [ $stat = 0 ]
         then
-            "$TO_ECHO" "$reldir"| "$TO_SED" "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1/"
+            \echo "$reldir"| \sed "s/^$(_to_regex "$todir")\(.*\)/$bookmark\1/"
         fi
     fi
 }
