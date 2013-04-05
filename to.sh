@@ -73,7 +73,7 @@ to() {
         return 0
     elif [ "$1" = "-r" ]
     then
-        if [ -e "$TO_BOOKMARK_DIR/$2" ]
+        if [ -h "$TO_BOOKMARK_DIR/$2" ]
         then
             # remove bookmark
             \rm "$TO_BOOKMARK_DIR/$2"
