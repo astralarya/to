@@ -57,7 +57,7 @@ to() {
         else
             local name="$2"
         fi
-        if [ "$name" = '/' -o "$name" = '.' ]
+        if [ "$name" = '/' -o "$name" = '.' -o "$name" = '..' ]
         then
             # special cases
             echo "Invalid bookmark name: $name"
