@@ -49,19 +49,13 @@ to() {
         return 0
     elif [ "$1" = "-b" ]
     then
-        if [ "$2" ]
-        then
-            local name="$2"
-        else
-            local name="$(\basename "$PWD")"
-        fi
         # add bookmark
         if [ "$3" ]
         then
             if [ -d "$3" ]
             then
                 # create link (symbolic force no-dereference)
-                \ln -sfn "$3" "$TO_BOOKMARK_DIR/$name"
+                \ln -sfn "$3" "$TO_BOOKMARK_DIR/$2"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
