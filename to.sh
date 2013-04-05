@@ -67,10 +67,12 @@ to() {
         return 0
     elif [ "$1" = "-r" ]
     then
-        if [ -h "$TO_BOOKMARK_DIR/$(_to_path_head $2)" ]
+        if [ "$2" = "$(_to_path_head "$2")" -a -h "$TO_BOOKMARK_DIR/$2" ]
         then
             # remove bookmark
-            \rm "$TO_BOOKMARK_DIR/$(_to_path_head $2)"
+            \rm "$TO_BOOKMARK_DIR/$2"
+        else
+            \echo "No bookmark: $2"
         fi
         return 0
     fi
