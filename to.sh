@@ -57,10 +57,10 @@ to() {
         else
             local name="$2"
         fi
-        if [ "$name" = '/' ]
+        if [ "$name" = '/' -o "$name" = '.' ]
         then
             # special case for root
-            echo "Please name this bookmark"
+            echo "Invalid bookmark name: $name"
             return 1
         fi
         if [ "$3" ]
