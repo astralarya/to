@@ -117,10 +117,12 @@ _to() {
     fi
     # build reply
     local compreply
+    local matcher="$1"
     if [ "$3" = "-b" ]
     then
         # normal file completion
-        compreply="$(\find "$(\dirname -- "${1}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
+        compreply="$(\find "$(\dirname -- "${1/#-/./-}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
+        matcher="${1/#-/./-}"
     elif [ "$2" = "-b" ]
     then
         # add current directory
@@ -151,7 +153,7 @@ _to() {
         fi
     fi
     # generate reply 
-    \sed -n "/^$(_to_regex "$1").*/p" <<< "$compreply"
+    \sed -n "/^$(_to_regex "$matcher").*/p" <<< "$compreply"
 }
 
 # tab completion bash
