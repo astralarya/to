@@ -1,4 +1,4 @@
-# to - v1.3.2
+# to - v1.3.3
 # Bookmark locations in bash
 #
 # Copyright (C) 2013 Mara Kim
