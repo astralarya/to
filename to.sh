@@ -82,7 +82,7 @@ to() {
     then
         \cd -P "$TO_BOOKMARK_DIR/$1"
     else
-        \echo "Invalid shortcut: $1"
+        \echo "Invalid link: $1"
         return 1
     fi
     return 0
