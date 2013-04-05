@@ -75,8 +75,8 @@ to() {
         else
             local target="$PWD"
         fi
-        # create link (symbolic force no-dereference)
-        \ln -sfn -T "$target" -- "$TO_BOOKMARK_DIR/$name"
+        # create link (symbolic force no-dereference Target)
+        \ln -sfnT "$target" -- "$TO_BOOKMARK_DIR/$name"
         return 0
     elif [ "$1" = "-r" ]
     then
