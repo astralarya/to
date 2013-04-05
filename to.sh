@@ -134,9 +134,11 @@ _to() {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
+        # add subdirs
         compreply="$(_to_subdirs "$1")"$'\n'"$compreply"
         if [ "$2" = "-p" ]
         then
+            # add subfiles
             compreply="$(_to_subfiles "$1")"$'\n'"$compreply"
         fi
         # get bookmarks (with slash)
