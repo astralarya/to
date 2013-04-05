@@ -55,7 +55,7 @@ to() {
             if [ -d "$3" ]
             then
                 # create link (symbolic force no-dereference)
-                \ln -sfn -- "$3" "$TO_BOOKMARK_DIR/$2"
+                \ln -sfn -- "$(\readlink -e -- "$3")" "$TO_BOOKMARK_DIR/$2"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
