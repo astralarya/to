@@ -55,23 +55,20 @@ to() {
         else
             local name="$(\basename "$PWD")"
         fi
-        if [ -e "$TO_BOOKMARK_DIR/$name" ]
-        then
-            # remove bookmark
-            \rm "$TO_BOOKMARK_DIR/$name"
-        fi
         # add bookmark
         if [ "$3" ]
         then
             if [ -d "$3" ]
             then
-                \ln -s "$3" "$TO_BOOKMARK_DIR/$name"
+                # create link (symbolic force no-dereference)
+                \ln -sfn "$3" "$TO_BOOKMARK_DIR/$name"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
             fi
         else
-            \ln -s "$PWD" "$TO_BOOKMARK_DIR/$2"
+            # create link (symbolic force no-dereference)
+            \ln -sfn "$PWD" "$TO_BOOKMARK_DIR/$2"
         fi
         return 0
     elif [ "$1" = "-r" ]
