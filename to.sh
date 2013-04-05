@@ -42,7 +42,7 @@ to() {
     elif [ "$1" = "-p" ]
     then
         # print path of bookmark
-        \echo "$(\readlink -f -- "$TO_BOOKMARK_DIR/$2")"
+        \readlink -f -- "$TO_BOOKMARK_DIR/$2" || return 1
         return 0
     elif [ "$1" = "-b" ]
     then
