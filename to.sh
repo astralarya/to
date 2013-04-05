@@ -55,14 +55,14 @@ to() {
             if [ -d "$3" ]
             then
                 # create link (symbolic force no-dereference)
-                \ln -sfn "$3" "$TO_BOOKMARK_DIR/$2"
+                \ln -sfn -- "$3" "$TO_BOOKMARK_DIR/$2"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
             fi
         else
             # create link (symbolic force no-dereference)
-            \ln -sfn "$PWD" "$TO_BOOKMARK_DIR/$2"
+            \ln -sfn -- "$PWD" "$TO_BOOKMARK_DIR/$2"
         fi
         return 0
     elif [ "$1" = "-r" ]
@@ -106,6 +106,7 @@ _to() {
     local compreply
     if [ "$3" = "-b" ]
     then
+        # normal file completion
         compreply="$(\find "$(\dirname "${1}0")" -mindepth 1 -maxdepth 1 -type d)"
     elif [ "$2" = "-b" ]
     then
@@ -219,12 +220,12 @@ _to_regex() {
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    \find "$(\dirname "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    \find "$(\dirname "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
