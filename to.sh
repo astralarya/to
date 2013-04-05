@@ -33,7 +33,7 @@ to() {
     if [ -z "$1" ]
     then
         # show bookmarks
-        \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f -> %l\n"
+        \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf "%f -> %l\n"
         return 0
     elif [ "$1" = "-h" ]
     then
@@ -51,16 +51,16 @@ to() {
         then
             if [ -d "$3" ]
             then
-                # create link (symbolic force no-dereference)
-                \ln -sfn -- "$(\readlink -e -- "$3")" "$TO_BOOKMARK_DIR/$2"
+                local target="$(\readlink -e -- "$3")"
             else
                 \echo "$3 does not refer to a directory"
                 return 1
             fi
         else
-            # create link (symbolic force no-dereference)
-            \ln -sfn -- "$PWD" "$TO_BOOKMARK_DIR/$2"
+            local target="$PWD"
         fi
+        # create link (symbolic force no-dereference)
+        \ln -sfn -- "$target" "$TO_BOOKMARK_DIR/$2"
         return 0
     elif [ "$1" = "-r" ]
     then
@@ -104,11 +104,11 @@ _to() {
     if [ "$3" = "-b" ]
     then
         # normal file completion
-        compreply="$(\find "$(\dirname "${1}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
+        compreply="$(\find "$(\dirname -- "${1}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
     elif [ "$2" = "-b" ]
     then
         # add current directory
-        compreply="$(\basename "$PWD" )"$'\n'"$compreply"
+        compreply="$(\basename -- "$PWD" )"$'\n'"$compreply"
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     elif [ "$2" = "-r" ]
@@ -217,12 +217,12 @@ _to_regex() {
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    \find "$(\dirname "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    \find "$(\dirname "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
