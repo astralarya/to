@@ -27,7 +27,7 @@ to() {
     # create empty bookmarks folder if it does not exist
     if [ ! -d "$TO_BOOKMARK_DIR" ]
     then
-        \mkdir -pv "$TO_BOOKMARK_DIR"
+        \mkdir -pv -- "$TO_BOOKMARK_DIR"
     fi
 
     if [ -z "$1" ]
@@ -35,7 +35,7 @@ to() {
         # show bookmarks
         for link in $(_to_bookmarks)
         do
-            echo "$link" '->' "$(\readlink "$TO_BOOKMARK_DIR/$link")"
+            echo "$link -> $(\readlink -- "$TO_BOOKMARK_DIR/$link")"
         done
         return 0
     elif [ "$1" = "-h" ]
@@ -45,7 +45,7 @@ to() {
     elif [ "$1" = "-p" ]
     then
         # print path of bookmark
-        \echo "$(\readlink -f "$TO_BOOKMARK_DIR/$2")"
+        \echo "$(\readlink -f -- "$TO_BOOKMARK_DIR/$2")"
         return 0
     elif [ "$1" = "-b" ]
     then
@@ -70,7 +70,7 @@ to() {
         if [ "$2" = "$(_to_path_head "$2")" -a -h "$TO_BOOKMARK_DIR/$2" ]
         then
             # remove bookmark
-            \rm "$TO_BOOKMARK_DIR/$2"
+            \rm -- "$TO_BOOKMARK_DIR/$2"
         else
             \echo "No bookmark: $2"
         fi
@@ -80,7 +80,7 @@ to() {
     # go to bookmark
     if [ -d "$TO_BOOKMARK_DIR/$1" ]
     then
-        \cd -P "$TO_BOOKMARK_DIR/$1"
+        \cd -P -- "$TO_BOOKMARK_DIR/$1"
     else
         \echo "Invalid link: $1"
         return 1
@@ -100,7 +100,7 @@ _to() {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_DIR" ]
     then
-        \mkdir -pv "$TO_BOOKMARK_DIR"
+        \mkdir -pv -- "$TO_BOOKMARK_DIR"
     fi
     # build reply
     local compreply
