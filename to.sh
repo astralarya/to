@@ -134,15 +134,23 @@ _to() {
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        # add subdirs
-        compreply="$(_to_subdirs "$1")"$'\n'"$compreply"
+        local subdirs="$(_to_subdirs "$1")"
         if [ "$2" = "-p" ]
         then
-            # add subfiles
-            compreply="$(_to_subfiles "$1")"$'\n'"$compreply"
+            local subfiles="$(_to_subfiles "$1")"
+        else
+            local subfiles=""
         fi
-        # get bookmarks (with slash)
-        compreply="$(_to_bookmarks "/")"$'\n'"$compreply"
+        if [ "$subdirs" -o "$subfiles" ]
+        then
+            # add subdirectories
+            compreply="$subdirs"$'\n'"$compreply"
+            # add subfiles
+            compreply="$subfiles"$'\n'"$compreply"
+        else
+            # get bookmarks (with slash)
+            compreply="$(_to_bookmarks "/")"$'\n'"$compreply"
+        fi
     fi
     # generate reply 
     \sed -n "/^$(_to_regex "$matcher").*/p" <<< "$compreply"
