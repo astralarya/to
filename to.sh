@@ -27,7 +27,7 @@ to() {
     # create empty bookmarks folder if it does not exist
     if [ ! -d "$TO_BOOKMARK_DIR" ]
     then
-        \mkdir "$TO_BOOKMARK_DIR"
+        \mkdir -pv "$TO_BOOKMARK_DIR"
     fi
 
     if [ -z "$1" ]
