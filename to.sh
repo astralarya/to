@@ -47,6 +47,16 @@ to() {
     elif [ "$1" = "-b" ]
     then
         # add bookmark
+        if [ -z "$2" ]
+        then
+            local name="$(\basename -- "$PWD")"
+        elif [ "$(\basename -- "$2")" != "$2" ]
+        then
+            echo "Invalid bookmark name: $2"
+            return 1
+        else
+            local name="$2"
+        fi
         if [ "$3" ]
         then
             if [ -d "$3" ]
@@ -60,7 +70,7 @@ to() {
             local target="$PWD"
         fi
         # create link (symbolic force no-dereference)
-        \ln -sfn -- "$target" "$TO_BOOKMARK_DIR/$2"
+        \ln -sfn -T "$target" -- "$TO_BOOKMARK_DIR/$name"
         return 0
     elif [ "$1" = "-r" ]
     then
