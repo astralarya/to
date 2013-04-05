@@ -211,24 +211,18 @@ _to_path_head() {
 
 # clean input for sed search
 _to_regex() {
-    if [ "$1" = "/" ]
-    then
-        # special case for root dir
-        \echo
-    else
-        \echo "$1" | \sed 's/[\/&]/\\&/g'
-    fi
+    \sed 's/[\/&]/\\&/g' <<< "$1"
 }
 
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s@^$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")@$(_to_path_head "$1")@"
+    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s@^$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")@$(_to_path_head "$1")@"
+    \find "$(\dirname "$(\readlink -f "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
