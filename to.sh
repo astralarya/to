@@ -59,7 +59,7 @@ to() {
         fi
         if [ "$name" = '/' -o "$name" = '.' ]
         then
-            # special case for root
+            # special cases
             echo "Invalid bookmark name: $name"
             return 1
         fi
