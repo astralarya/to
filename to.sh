@@ -33,10 +33,7 @@ to() {
     if [ -z "$1" ]
     then
         # show bookmarks
-        for link in $(_to_bookmarks)
-        do
-            echo "$link -> $(\readlink -- "$TO_BOOKMARK_DIR/$link")"
-        done
+        \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f -> %l\n"
         return 0
     elif [ "$1" = "-h" ]
     then
@@ -107,7 +104,7 @@ _to() {
     if [ "$3" = "-b" ]
     then
         # normal file completion
-        compreply="$(\find "$(\dirname "${1}0")" -mindepth 1 -maxdepth 1 -type d)"
+        compreply="$(\find "$(\dirname "${1}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
     elif [ "$2" = "-b" ]
     then
         # add current directory
