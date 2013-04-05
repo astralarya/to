@@ -104,7 +104,7 @@ _to() {
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_DIR" ]
     then
-        \mkdir "$TO_BOOKMARK_DIR"
+        \mkdir -pv "$TO_BOOKMARK_DIR"
     fi
     # build reply
     local compreply
