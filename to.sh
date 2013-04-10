@@ -22,8 +22,34 @@
 TO_BOOKMARK_DIR=~/.bookmarks
 
 ### MAIN ###
-
 to() {
+    # read arguments
+    local option
+    local input
+    local state
+    local good="good"
+    for arg in "$@"
+    do
+        if [ "$state" = "input" ]
+        then
+            input="$input $arg"
+        elif [ "$arg" = "-h" -o "$arg" = "--help" ]
+        then
+            _to_help
+            return 0
+        elif [[ "$arg" = -* ]]
+        then
+            if [ -z "option" ]
+            then
+                option=$arg
+            else
+                echo "Ignored option: $arg"
+            fi
+        else
+            input="$input $arg"
+        fi
+    done
+
     # create empty bookmarks folder if it does not exist
     if [ ! -d "$TO_BOOKMARK_DIR" ]
     then
@@ -34,10 +60,6 @@ to() {
     then
         # show bookmarks
         \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf "%f -> %l\n"
-        return 0
-    elif [ "$1" = "-h" ]
-    then
-        _to_help
         return 0
     elif [ "$1" = "-p" ]
     then
