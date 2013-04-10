@@ -86,7 +86,7 @@ Options
         local response
         for ((i=2; i < ${#input[@]}; i++))
         do
-            if [ "${input[$i]}" ]
+            if [ -h "$TO_BOOKMARK_DIR/$(_to_path_head "${input[$i]}")" ]
             then
                 response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/${input[$i]}")"
                 if [ $? != 0 ]
