@@ -27,6 +27,12 @@ to() {
     local option
     local input
     local state
+    if [ "$BASH" ]
+    then
+        # skip 0th and 1st index for zsh compatability
+        input[0]="null"
+        input[1]="null"
+    fi
     for arg in "$@"
     do
         if [ "$state" = "input" ]
@@ -47,9 +53,9 @@ Options
         elif [ "$arg" = "--" ]
         then
             state="input"
-        elif [[ "$arg" = -* ]]
+        elif [ "$arg" = "-b" -o "$arg" = "-r" -o "$arg" = "-p" ]
         then
-            if [ -z "$option" ]
+            if [ ! "$option" ]
             then
                 option="$arg"
             else
@@ -59,6 +65,8 @@ Options
             input+=("$arg")
         fi
     done
+    local first="${input[2]}"
+    local second="${input[3]}"
 
     # create empty bookmarks folder if it does not exist
     if [ ! -d "$TO_BOOKMARK_DIR" ]
@@ -66,7 +74,7 @@ Options
         \mkdir -pv -- "$TO_BOOKMARK_DIR"
     fi
 
-    if [ -z "$option" -a -z "$input" ]
+    if [ -z "$option" -a -z "$first" ]
     then
         # show bookmarks
         \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf "%f -> %l\n"
@@ -76,12 +84,15 @@ Options
         # print path of bookmarks
         local good="good"
         local response
-        for arg in "${input[@]}"
+        for ((i=2; i < ${#input[@]}; i++))
         do
-            response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/$arg")"
-            if [ $? != 0 ]
+            if [ "${input[$i]}" ]
             then
-                good="bad"
+                response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/${input[$i]}")"
+                if [ $? != 0 ]
+                then
+                    good="bad"
+                fi
             fi
         done
         echo $response
@@ -94,15 +105,15 @@ Options
     elif [ "$option" = "-b" ]
     then
         # add bookmark
-        if [ -z "$input" ]
+        if [ -z "$first" ]
         then
             local name="$(\basename -- "$PWD")"
-        elif [ "$(\basename -- "$input")" != "$input" ]
+        elif [ "$(\basename -- "$first")" != "$first" ]
         then
-            echo "Invalid bookmark name: $input"
+            echo "Invalid bookmark name: $first"
             return 1
         else
-            local name="$input"
+            local name="$first"
         fi
         if [ "$name" = '/' -o "$name" = '.' -o "$name" = '..' ]
         then
@@ -110,13 +121,13 @@ Options
             echo "Invalid bookmark name: $name"
             return 1
         fi
-        if [ "${input[1]}" ]
+        if [ "$second" ]
         then
-            if [ -d "${input[1]}" ]
+            if [ -d "$second" ]
             then
-                local target="$(\readlink -e -- "${input[1]}")"
+                local target="$(\readlink -e -- "$second")"
             else
-                \echo "${input[1]} does not refer to a directory"
+                \echo "$second does not refer to a directory"
                 return 1
             fi
         else
@@ -127,22 +138,22 @@ Options
         return 0
     elif [ "$option" = "-r" ]
     then
-        if [ "$input" = "$(_to_path_head "$input")" -a -h "$TO_BOOKMARK_DIR/$input" ]
+        if [ "$first" = "$(_to_path_head "$first")" -a -h "$TO_BOOKMARK_DIR/$first" ]
         then
             # remove bookmark
-            \rm -- "$TO_BOOKMARK_DIR/$input"
+            \rm -- "$TO_BOOKMARK_DIR/$first"
         else
-            \echo "No bookmark: $input"
+            \echo "No bookmark: $first"
         fi
         return 0
     fi
 
     # go to bookmark
-    if [ -d "$TO_BOOKMARK_DIR/$input" ]
+    if [ -d "$TO_BOOKMARK_DIR/$first" ]
     then
-        \cd -P -- "$TO_BOOKMARK_DIR/$input"
+        \cd -P -- "$TO_BOOKMARK_DIR/$first"
     else
-        \echo "Invalid link: $input"
+        \echo "Invalid link: $first"
         return 1
     fi
     return 0
