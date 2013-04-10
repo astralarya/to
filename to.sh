@@ -34,7 +34,15 @@ to() {
             input+=("$arg")
         elif [ "$arg" = "-h" -o "$arg" = "--help" ]
         then
-            _to_help
+            \echo "Usage: to [OPTION] [BOOKMARK] [DEST]
+Set the current working directory to a saved bookmark or subdirectory,
+or create such a bookmark.
+To view bookmarks, execute with no parameters
+Options
+  -b	Add a new bookmark (overwrites any current bookmark)
+  -r	Remove bookmark
+  -p	Print bookmark path
+  -h	Show help"
             return 0
         elif [ "$arg" = "--" ]
         then
@@ -242,18 +250,6 @@ fi
 
 
 ### HELPER FUNCTIONS ###
-
-_to_help() {
-    \echo "Usage: to [OPTION] [BOOKMARK] [DEST]
-Set the current working directory to a saved bookmark or subdirectory,
-or create such a bookmark.
-To view bookmarks, execute with no parameters
-Options
-  -b	Add a new bookmark (overwrites any current bookmark)
-  -r	Remove bookmark
-  -p	Print bookmark path
-  -h	Show help"
-}
 
 # Return list of bookmarks in $TO_BOOKMARK_FILE
 # $1 suffix
