@@ -138,13 +138,19 @@ Options
         return 0
     elif [ "$option" = "-r" ]
     then
-        if [ "$first" = "$(_to_path_head "$first")" -a -h "$TO_BOOKMARK_DIR/$first" ]
-        then
-            # remove bookmark
-            \rm -- "$TO_BOOKMARK_DIR/$first"
-        else
-            \echo "No bookmark: $first"
-        fi
+        for ((i=2; i < ${#input[@]}; i++))
+        do
+            if [ "${input[$i]}" ]
+            then
+                if [ "${input[$i]}" = "$(_to_path_head "${input[$i]}")" -a -h "$TO_BOOKMARK_DIR/${input[$i]}" ]
+                then
+                    # remove bookmark
+                    \rm -- "$TO_BOOKMARK_DIR/${input[$i]}"
+                else
+                    \echo "No bookmark: ${input[$i]}"
+                fi
+            fi
+        done
         return 0
     fi
 
