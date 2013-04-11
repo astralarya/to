@@ -27,12 +27,6 @@ to() {
     local option
     local input
     local state
-    if [ "$BASH" ]
-    then
-        # skip 0th and 1st index for zsh compatability
-        input[0]="null"
-        input[1]="null"
-    fi
     for arg in "$@"
     do
         if [ "$state" = "input" ]
@@ -59,14 +53,12 @@ Options
             then
                 option="$arg"
             else
-                echo "Ignored option: $arg"
+                \echo "Ignored option: $arg"
             fi
         else
             input+=("$arg")
         fi
     done
-    local first="${input[2]}"
-    local second="${input[3]}"
 
     # create empty bookmarks folder if it does not exist
     if [ ! -d "$TO_BOOKMARK_DIR" ]
@@ -74,7 +66,7 @@ Options
         \mkdir -pv -- "$TO_BOOKMARK_DIR"
     fi
 
-    if [ -z "$option" -a -z "$first" ]
+    if [ -z "$option" -a "${#input[@]}" = 0 ]
     then
         # show bookmarks
         \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf "%f -> %l\n"
@@ -84,18 +76,21 @@ Options
         # print path of bookmarks
         local good="good"
         local response
-        for ((i=2; i < ${#input[@]}; i++))
+        for i in "${input[@]}"
         do
-            if [ -h "$TO_BOOKMARK_DIR/$(_to_path_head "${input[$i]}")" ]
+            if [ "$i" = '.' ]
             then
-                response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/${input[$i]}")"
+                response+=" $TO_BOOKMARK_DIR"
+            elif [ -h "$TO_BOOKMARK_DIR/$(_to_path_head "$i")" ]
+            then
+                response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/$i")"
                 if [ $? != 0 ]
                 then
                     good="bad"
                 fi
             fi
         done
-        echo $response
+        \echo $response
         if [ "$good" != "good" ]
         then
             return 1
@@ -104,50 +99,71 @@ Options
         fi
     elif [ "$option" = "-b" ]
     then
-        # add bookmark
-        if [ -z "$first" ]
+        # get target
+        if [ "${#input[@]}" -gt 1 ]
         then
-            local name="$(\basename -- "$PWD")"
-        elif [ "$(\basename -- "$first")" != "$first" ]
-        then
-            echo "Invalid bookmark name: $first"
-            return 1
-        else
-            local name="$first"
-        fi
-        if [ "$name" = '/' -o "$name" = '.' -o "$name" = '..' ]
-        then
-            # special cases
-            echo "Invalid bookmark name: $name"
-            return 1
-        fi
-        if [ "$second" ]
-        then
-            if [ -d "$second" ]
+            local target="${input[-1]}"
+            if [ -d "$target" ]
             then
-                local target="$(\readlink -e -- "$second")"
+                local target="$(\readlink -e -- "$target")"
             else
-                \echo "$second does not refer to a directory"
+                \echo "$target does not refer to a directory"
                 return 1
             fi
         else
             local target="$PWD"
         fi
-        # create link (symbolic force no-dereference Target)
-        \ln -sfnT "$target" -- "$TO_BOOKMARK_DIR/$name"
-        return 0
+        # add bookmarks
+        local good="good"
+        if [ "${#input[@]}" -lt 1 ]
+        then
+            local name="$(\basename -- "$PWD")"
+            # create link (symbolic force no-dereference Target)
+            \ln -sfnT "$target" -- "$TO_BOOKMARK_DIR/$name"
+        else
+            for i in "${input[@]:0:${#input[@]}-1}"
+            do
+                if [ "$i" ]
+                then
+                    if [ "$(\basename -- "$i")" != "$i" ]
+                    then
+                        \echo "Invalid bookmark name: $i"
+                        good="bad"
+                        continue
+                    else
+                        local name="$i"
+                    fi
+                    if [ "$name" = '/' -o "$name" = '.' -o "$name" = '..' ]
+                    then
+                        # special cases
+                        \echo "Invalid bookmark name: $name"
+                        good="bad"
+                        continue
+                    fi
+                    # create link (symbolic force no-dereference Target)
+                    \ln -sfnT "$target" -- "$TO_BOOKMARK_DIR/$name"
+                fi
+            done
+        fi
+        if [ "$good" = "good" ]
+        then
+            return 0
+        else
+            return 1
+        fi
     elif [ "$option" = "-r" ]
     then
-        for ((i=2; i < ${#input[@]}; i++))
+        for i in "${input[@]}"
         do
-            if [ "${input[$i]}" ]
+            if [ "$i" ]
             then
-                if [ "${input[$i]}" = "$(_to_path_head "${input[$i]}")" -a -h "$TO_BOOKMARK_DIR/${input[$i]}" ]
+                if [ "$i" = "$(_to_path_head "$i")" -a -h "$TO_BOOKMARK_DIR/$i" ]
                 then
                     # remove bookmark
-                    \rm -- "$TO_BOOKMARK_DIR/${input[$i]}"
+                    \rm -- "$TO_BOOKMARK_DIR/$i"
+                    \echo "Removed bookmark: $i"
                 else
-                    \echo "No bookmark: ${input[$i]}"
+                    \echo "No bookmark: $i"
                 fi
             fi
         done
@@ -155,14 +171,17 @@ Options
     fi
 
     # go to bookmark
-    if [ -d "$TO_BOOKMARK_DIR/$first" ]
-    then
-        \cd -P -- "$TO_BOOKMARK_DIR/$first"
-    else
-        \echo "Invalid link: $first"
-        return 1
-    fi
-    return 0
+    for i in "${input[@]}"
+    do
+        if [ -d "$TO_BOOKMARK_DIR/$i" ]
+        then
+            \cd -P -- "$TO_BOOKMARK_DIR/$i"
+        else
+            \echo "Invalid link: $i"
+            return 1
+        fi
+        return 0
+    done
 }
 
 
@@ -313,12 +332,12 @@ _to_regex() {
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
 }
 
