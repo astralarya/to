@@ -54,7 +54,8 @@ open up bar.cpp at the foo bookmark in vim
 > vim $(to -p foo/bar.cpp)
 
 You can also manually edit the $TO_BOOKMARK_DIR folder (defined in `to.sh`, default `~/.bookmarks`)
-which contains symbolic links that represent your bookmarks.
+which contains symbolic links that represent your bookmarks. You can switch to this directory with:
+> to .
 
 
 ## Dependencies
