@@ -169,7 +169,6 @@ Options
                 then
                     # remove bookmark
                     \rm -- "$TO_BOOKMARK_DIR/$i"
-                    \echo "Removed bookmark: $i"
                 else
                     \echo "No bookmark: $i"
                 fi
