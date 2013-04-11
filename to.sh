@@ -99,10 +99,17 @@ Options
         fi
     elif [ "$option" = "-b" ]
     then
+        if [ "$ZSH_VERSION" ]
+        then
+            local bound=2
+        else
+            local bound=1
+        fi
         # get target
-        if [ "${#input[@]}" -gt 1 ]
+        if [ "${#input[@]}" -gt "$bound" ]
         then
             local target="${input[-1]}"
+            local end=${#input[@]}-1
             if [ -d "$target" ]
             then
                 local target="$(\readlink -e -- "$target")"
@@ -112,16 +119,17 @@ Options
             fi
         else
             local target="$PWD"
+            local end=${#input[@]}
         fi
         # add bookmarks
         local good="good"
-        if [ "${#input[@]}" -lt 1 ]
+        if [ "${#input[@]}" -lt "$bound" ]
         then
             local name="$(\basename -- "$PWD")"
             # create link (symbolic force no-dereference Target)
             \ln -sfnT "$target" -- "$TO_BOOKMARK_DIR/$name"
         else
-            for i in "${input[@]:0:${#input[@]}-1}"
+            for i in "${input[@]:0:$end}"
             do
                 if [ "$i" ]
                 then
