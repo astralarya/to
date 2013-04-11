@@ -169,39 +169,85 @@ Options
 ### TAB COMPLETION ###
 
 # tab completion generic
-# $1 = ultimate word (current)
-# $2 = penultimate word
-# $3 = antepenultimate word
+# $1 = position of current word (1 is first argument)
+# $2-n = words
 # Output valid completions
 _to() {
+    # read arguments
+    local word
+    local cword
+    local option
+    local state
+    local input
+    local inputpos
+    local iter=-1
+    for arg in "$@"
+    do
+        if [ -z "$cword" ]
+        then
+            # get first argument
+            cword=$arg
+        elif [ "$iter" = 0 ]
+        then
+            # discard self argument 'to'
+            input=0
+        elif [ "$state" = "input" ]
+        then
+            input="$(\expr $input + 1)"
+        elif [ "$arg" = "-h" -o "$arg" = "--help" ]
+        then
+            return 0
+        elif [ "$arg" = "--" ]
+        then
+            state="input"
+        elif [ "$arg" = "-b" -o "$arg" = "-r" -o "$arg" = "-p" ]
+        then
+            if [ ! "$option" ]
+            then
+                option="$arg"
+            fi
+        else
+            input="$(\expr $input + 1)"
+        fi
+        if [ "$iter" = "$cword" ]
+        then
+            word=$arg
+            inputpos=$input
+        fi
+        iter="$(\expr $iter + 1)"
+    done
+
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_DIR" ]
     then
         \mkdir -pv -- "$TO_BOOKMARK_DIR"
     fi
+
     # build reply
     local compreply
-    local matcher="$1"
-    if [ "$3" = "-b" ]
+    if [ "$option" = "-b" ]
     then
-        # normal file completion
-        compreply="$(\find "$(\dirname -- "${1/#-/./-}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
-        matcher="${1/#-/./-}"
-    elif [ "$2" = "-b" ]
-    then
-        # add current directory
-        compreply="$(\basename -- "$PWD" )"$'\n'"$compreply"
-        # get bookmarks
-        compreply="$(_to_bookmarks)"$'\n'"$compreply"
-    elif [ "$2" = "-r" ]
+        if [ "$inputpos" = 1 ]
+        then
+            # add current directory
+            compreply="$(\basename -- "$PWD" )"$'\n'"$compreply"
+            # get bookmarks
+            compreply="$(_to_bookmarks)"$'\n'"$compreply"
+        elif [ "$inputpos" = 2 ]
+        then
+            # normal file completion
+            word="${word/#-/./-}"
+            compreply="$(\find "$(\dirname -- "${word}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
+        fi
+    elif [ "$option" = "-r" ]
     then
         # get bookmarks
         compreply="$(_to_bookmarks)"$'\n'"$compreply"
     else
-        local subdirs="$(_to_subdirs "$1")"
-        if [ "$2" = "-p" ]
+        local subdirs="$(_to_subdirs "$word")"
+        if [ "$option" = "-p" ]
         then
-            local subfiles="$(_to_subfiles "$1")"
+            local subfiles="$(_to_subfiles "$word")"
         else
             local subfiles=""
         fi
@@ -217,43 +263,23 @@ _to() {
         fi
     fi
     # generate reply 
-    \sed -n "/^$(_to_regex "$matcher").*/p" <<< "$compreply"
+    \sed -n "/^$(_to_regex "$word").*/p" <<< "$compreply"
 }
 
 # tab completion bash
 _to_bash() {
-    # get components
-    local len="${#COMP_WORDS[@]}"
-    local one="${COMP_WORDS[COMP_CWORD]}"
-    local two="${COMP_WORDS[COMP_CWORD-1]}"
-    if [ $len -gt 2 ]
-    then
-       local three="${COMP_WORDS[COMP_CWORD-2]}"
-    else
-       local three=""
-    fi
     # call generic tab completion function
     local IFS='
 '
-    COMPREPLY=( $(_to "$one" "$two" "$three") )
+    COMPREPLY=( $(_to "$COMP_CWORD" ${COMP_WORDS[@]}) )
 }
 
 # tab completion zsh
 _to_zsh() {
-    # get components
-    local len="${#COMP_WORDS[@]}"
-    local one="${COMP_WORDS[COMP_CWORD]}"
-    local two="${COMP_WORDS[COMP_CWORD-1]}"
-    if [ $len -gt 2 ]
-    then
-       local three="${COMP_WORDS[COMP_CWORD-2]}"
-    else
-       local three=""
-    fi
     # call generic tab completion function
     local IFS='
 '
-    COMPREPLY=( $(_to "$one" "$two" "$three") )
+    COMPREPLY=( $(_to "$COMP_CWORD" ${COMP_WORDS[@]}) )
 }
 
 # setup tab completion
