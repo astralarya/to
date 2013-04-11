@@ -22,6 +22,8 @@ Options
 * -p	Print bookmark path
 * -h	Show help
 
+Other than -h, only the first option given is ever used.
+
 ### Examples
 
 print all bookmarks
