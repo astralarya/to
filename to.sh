@@ -234,7 +234,6 @@ _to() {
         fi
         if [ "$iter" = "$cword" ]
         then
-            echo "yes" >> test
             word=$arg
             inputpos=$input
         fi
@@ -255,7 +254,6 @@ _to() {
     local compreply
     if [ "$option" = "-b" ]
     then
-        echo "$word $inputpos" >> test
         if [ "$inputpos" = 1 ]
         then
             # add current directory
@@ -304,7 +302,7 @@ _to() {
             filter+=("$completion")
         fi
     done
-    echo "${filter[@]}"
+    \echo "${filter[@]}"
 }
 
 # tab completion bash
