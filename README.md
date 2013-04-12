@@ -72,7 +72,6 @@ The following functionality should either be provided or built in:
 * find
 * dirname
 * basename
-* sed
 
 ## License
 
