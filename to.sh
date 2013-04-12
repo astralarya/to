@@ -271,12 +271,12 @@ _to() {
         # get bookmarks
         compreply+=( $(_to_bookmarks "$IFS") )
     else
-        local subdirs=( $(_to_subdirs "$word") )
+        local subdirs
+        local subfiles
+        subdirs=( $(_to_subdirs "$word") )
         if [ "$option" = "-p" ]
         then
-            local subfiles=( $(_to_subfiles "$word") )
-        else
-            local subfiles
+            subfiles=( $(_to_subfiles "$word") )
         fi
         local tosub
         if [ "${#subdirs[@]}" != 0 ]
@@ -342,8 +342,13 @@ _to_bookmarks() {
 
 # get the first part of the path
 _to_path_head() {
-    local IFS="/"
-    local target=( $1 )
+    if [ "$ZSH_VERSION" ]
+    then
+        local target
+        target=(${(s:/:)${1}})
+    else
+        local target=( ${1//\// } )
+    fi
     local head=$target
     local prev
     local first
@@ -351,7 +356,7 @@ _to_path_head() {
     do
         if [ "$prev" != "${prev%\\}" ]
         then
-            head="$head$part"
+            head="$head/$part"
         elif [ -z "$first" ]
         then
             first="no"
@@ -366,7 +371,8 @@ _to_path_head() {
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    local files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/$IFS" 2> /dev/null) )
+    local files
+    files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/$IFS" 2> /dev/null) )
     local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")"
     local replace="$(_to_path_head "$1")"
     \echo "${files[@]/#$pattern/$replace}"
@@ -375,7 +381,8 @@ _to_subdirs() {
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    local files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f -printf "%p$IFS" 2> /dev/null) )
+    local files
+    files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f -printf "%p$IFS" 2> /dev/null) )
     local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")"
     local replace="$(_to_path_head "$1")"
     \echo "${files[@]/#$pattern/$replace}"
