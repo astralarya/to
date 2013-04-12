@@ -342,7 +342,25 @@ _to_bookmarks() {
 
 # get the first part of the path
 _to_path_head() {
-    \sed -n '1h; 1!H; ${ g; s@^\(\(\\.\|[^/]\)*\)\(/.*\)\?$@\1@p }' <<< "$1"
+    local IFS="/"
+    local path=( $1 )
+    local head=$path
+    local prev
+    local first
+    for part in "${path[@]}"
+    do
+        if [ "$prev" != "${prev%\\}" ]
+        then
+            head="$head$part"
+        elif [ -z "$first" ]
+        then
+            first="no"
+        else
+            break
+        fi
+        prev=$part
+    done
+    echo $head
 }
 
 # find the directories that could be subdirectory expansions of
