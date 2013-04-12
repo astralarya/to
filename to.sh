@@ -78,10 +78,13 @@ Options
         local response
         for i in "${input[@]}"
         do
-            response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/$i")"
-            if [ $? != 0 ]
+            if [ "$i" ]
             then
-                good="bad"
+                response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/$i")"
+                if [ $? != 0 ]
+                then
+                    good="bad"
+                fi
             fi
         done
         \echo $response
