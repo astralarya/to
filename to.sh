@@ -293,7 +293,6 @@ _to() {
         local replace="$(_to_path_head "$word")"
         subdirs=( ${subdirs[@]/%/\/} )
         subdirs=( ${subdirs[@]/#$pattern/$replace} )
-        subdirs=( ${subdirs[@]//$'\n'/\\$'\n'} )
         if [ "$option" = "-p" ]
         then
             # get subfiles
@@ -304,7 +303,6 @@ _to() {
             local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
             local replace="$(_to_path_head "$word")"
             subfiles=( ${subfiles[@]/#$pattern/$replace} )
-            subfiles=( ${subfiles[@]//$'\n'/\\$'\n'} )
         fi
         local tosub
         if [ "$ZSH_VERSION" ]
@@ -337,8 +335,10 @@ _to() {
         fi
     fi
 
-    local filter
+    # clean completions
+    compreply=( ${compreply[@]//$'\n'/\\$'\n'} )
     # generate reply 
+    local filter
     for completion in "${compreply[@]}"
     do
         if [ -z "${completion/#$word*/}" ]
