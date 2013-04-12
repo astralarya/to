@@ -350,7 +350,9 @@ _to_path_head() {
         local target
         target=(${(s:/:)${1}})
     else
-        local target=( ${1//\// } )
+        local old="$IFS"
+        local IFS="/"
+        local target=( $1 )
     fi
     local head=$target
     local prev
