@@ -34,7 +34,7 @@ to() {
             input+=("$arg")
         elif [ "$arg" = "-h" -o "$arg" = "--help" ]
         then
-            \printf '%q\n' "Usage: to [OPTION] [BOOKMARK] [DEST]
+            \printf 'Usage: to [OPTION] [BOOKMARK] [DEST]
 Set the current working directory to a saved bookmark or subdirectory,
 or create such a bookmark.
 To view bookmarks, execute with no parameters
@@ -42,7 +42,8 @@ Options
   -b	Add a new bookmark (overwrites any current bookmark)
   -r	Remove bookmark
   -p	Print bookmark path
-  -h	Show help"
+  -h	Show help
+'
             return 0
         elif [ "$arg" = "--" ]
         then
@@ -288,7 +289,7 @@ _to() {
         while read -r -d '' file
         do
             subdirs+=($file)
-        done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '%q' /dev/null )")" -mindepth 1 -maxdepth 1 -type d -print0 2> /dev/null)
+        done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type d -print0 2> /dev/null)
         local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
         local replace="$(_to_path_head "$word")"
         subdirs=( ${subdirs[@]/%/\/} )
@@ -299,7 +300,7 @@ _to() {
             while read -r -d '' file
             do
                 subfiles+=($file)
-            done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '%q' /dev/null )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
+            done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
             local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
             local replace="$(_to_path_head "$word")"
             subfiles=( ${subfiles[@]/#$pattern/$replace} )
