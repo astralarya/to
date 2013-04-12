@@ -34,7 +34,7 @@ to() {
             input+=("$arg")
         elif [ "$arg" = "-h" -o "$arg" = "--help" ]
         then
-            \echo "Usage: to [OPTION] [BOOKMARK] [DEST]
+            \printf '%q\n' "Usage: to [OPTION] [BOOKMARK] [DEST]
 Set the current working directory to a saved bookmark or subdirectory,
 or create such a bookmark.
 To view bookmarks, execute with no parameters
@@ -53,7 +53,7 @@ Options
             then
                 option="$arg"
             else
-                \echo "Ignored option: $arg"
+                \printf 'Ignored option: %q\n' "$arg"
             fi
         else
             input+=("$arg")
@@ -69,7 +69,7 @@ Options
     if [ -z "$option" -a "${#input[@]}" = 0 ]
     then
         # show bookmarks
-        \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf "%f -> %l\n"
+        \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf '%f -> %l\n'
         return 0
     elif [ "$option" = "-p" ]
     then
@@ -87,7 +87,7 @@ Options
                 fi
             fi
         done
-        \echo $response
+        \printf '%q\n' $response
         if [ "$good" != "good" ]
         then
             return 1
@@ -111,7 +111,7 @@ Options
             then
                 local target="$(\readlink -e -- "$target")"
             else
-                \echo "$target does not refer to a directory"
+                \printf '%q does not refer to a directory\n' "$target"
                 return 1
             fi
         else
@@ -132,7 +132,7 @@ Options
                 then
                     if [ "$(\basename -- "$i")" != "$i" ]
                     then
-                        \echo "Invalid bookmark name: $i"
+                        \printf 'Invalid bookmark name: %q\n' "$i"
                         good="bad"
                         continue
                     else
@@ -141,7 +141,7 @@ Options
                     if [ "$name" = '/' -o "$name" = '.' -o "$name" = '..' ]
                     then
                         # special cases
-                        \echo "Invalid bookmark name: $name"
+                        \printf 'Invalid bookmark name: %q\n' "$name"
                         good="bad"
                         continue
                     fi
@@ -167,7 +167,7 @@ Options
                     # remove bookmark
                     \rm -- "$TO_BOOKMARK_DIR/$i"
                 else
-                    \echo "No bookmark: $i"
+                    \printf 'No bookmark: %q\n' "$i"
                 fi
             fi
         done
@@ -183,7 +183,7 @@ Options
             then
                 \cd -P -- "$TO_BOOKMARK_DIR/$i"
             else
-                \echo "Invalid link: $i"
+                \printf 'Invalid link: %q\n' "$i"
                 return 1
             fi
             return 0
@@ -199,13 +199,14 @@ Options
 # $2-n = words
 # Output valid completions
 _to() {
+    local IFS=$'\000'
     # read arguments
     local word
     local cword
     local option
     local state
-    local input
-    local inputpos=0
+    local inputpos
+    local input=-1
     local iter=-1
     for arg in "$@"
     do
@@ -213,13 +214,9 @@ _to() {
         then
             # get first argument
             cword=$arg
-        elif [ "$iter" = 0 ]
-        then
-            # discard self argument 'to'
-            input=0
         elif [ "$state" = "input" ]
         then
-            input="$(\expr $input + 1)"
+            input=$(\expr $input + 1)
         elif [ "$arg" = "-h" -o "$arg" = "--help" ]
         then
             return 0
@@ -233,18 +230,18 @@ _to() {
                 option="$arg"
             fi
         else
-            input="$(\expr $input + 1)"
+            input=$(\expr $input + 1)
         fi
         if [ "$iter" = "$cword" ]
         then
             word=$arg
             inputpos=$input
         fi
-        iter="$(\expr $iter + 1)"
+        iter=$(\expr $iter + 1)
     done
     if [ -z "$word" ]
     then
-        inputpos="$(\expr $inputpos + 1)"
+        inputpos=$(\expr $inputpos + 1)
     fi
 
     # create empty bookmarks file if it does not exist
@@ -262,24 +259,51 @@ _to() {
             # add current directory
             compreply+=("$(\basename -- "$PWD" )")
             # get bookmarks
-            compreply+=( $(_to_bookmarks "$IFS") )
+            local bookmarks
+            while read -r -d '' bookmark
+            do
+                bookmarks+=($bookmark)
+            done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
+            compreply+=( ${bookmarks[@]} )
         elif [ "$inputpos" = 2 ]
         then
             # normal file completion
             word="${word/#-/./-}"
-            compreply+=( $(\find "$(\dirname -- "${word}0")" -mindepth 1 -maxdepth 1 -type d -printf "%p/$IFS" 2> /dev/null) )
+            compreply+=( $(\find "$(\dirname -- "${word}0")" -mindepth 1 -maxdepth 1 -type d -printf '%p/\0' 2> /dev/null) )
         fi
     elif [ "$option" = "-r" ]
     then
         # get bookmarks
-        compreply+=( $(_to_bookmarks "$IFS") )
+        local bookmarks
+        while read -r -d '' bookmark
+        do
+            bookmarks+=($bookmark)
+        done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
+        compreply+=( ${bookmarks[@]} )
     else
         local subdirs
         local subfiles
-        subdirs=( $(_to_subdirs "$word") )
+        # get subdirs
+        while read -r -d '' file
+        do
+            subdirs+=($file)
+        done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '%q' /dev/null )")" -mindepth 1 -maxdepth 1 -type d -print0 2> /dev/null)
+        local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
+        local replace="$(_to_path_head "$word")"
+        subdirs=( ${subdirs[@]/%/\/} )
+        subdirs=( ${subdirs[@]/#$pattern/$replace} )
+        subdirs=( ${subdirs[@]//$'\n'/\\$'\n'} )
         if [ "$option" = "-p" ]
         then
-            subfiles=( $(_to_subfiles "$word") )
+            # get subfiles
+            while read -r -d '' file
+            do
+                subfiles+=($file)
+            done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '%q' /dev/null )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
+            local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
+            local replace="$(_to_path_head "$word")"
+            subfiles=( ${subfiles[@]/#$pattern/$replace} )
+            subfiles=( ${subfiles[@]//$'\n'/\\$'\n'} )
         fi
         local tosub
         if [ "${#subdirs[@]}" != 0 ]
@@ -297,7 +321,12 @@ _to() {
         if [ -z "$tosub" ]
         then
             # get bookmarks (with slash)
-            compreply+=( $(_to_bookmarks "/$IFS") )
+            local bookmarks
+            while read -r -d '' bookmark
+            do
+                bookmarks+=($bookmark)
+            done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f/\0')
+            compreply+=( ${bookmarks[@]} )
         fi
     fi
 
@@ -310,38 +339,26 @@ _to() {
             filter+=("$completion")
         fi
     done
-    \echo "${filter[@]}"
+    COMPREPLY=( ${filter[@]} )
 }
 
 # tab completion bash
 _to_bash() {
     # call generic tab completion function
-    COMPREPLY=( $(_to "$COMP_CWORD" ${COMP_WORDS[@]}) )
-}
-
-# tab completion zsh
-_to_zsh() {
-    # call generic tab completion function
-    COMPREPLY=( $(_to "$COMP_CWORD" ${COMP_WORDS[@]}) )
+    _to "$COMP_CWORD" ${COMP_WORDS[@]}
 }
 
 # setup tab completion
 if [ "$ZSH_VERSION" ]
 then
     \autoload -U +X bashcompinit && \bashcompinit
-    \complete -o nospace -F _to_zsh to
+    \complete -o nospace -F _to_bash to
 else
     \complete -o filenames -o nospace -F _to_bash to
 fi
 
 
 ### HELPER FUNCTIONS ###
-
-# Return list of bookmarks in $TO_BOOKMARK_FILE
-# $1 suffix
-_to_bookmarks() {
-    \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f$1"
-}
 
 # get the first part of the path
 _to_path_head() {
@@ -370,26 +387,6 @@ _to_path_head() {
         fi
         prev=$part
     done
-    echo $head
-}
-
-# find the directories that could be subdirectory expansions of
-# $1 word
-_to_subdirs() {
-    local files
-    files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/$IFS" 2> /dev/null) )
-    local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")"
-    local replace="$(_to_path_head "$1")"
-    \echo "${files[@]/#$pattern/$replace}"
-}
-
-# find the files that could be subdirectory expansions of
-# $1 word
-_to_subfiles() {
-    local files
-    files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f -printf "%p$IFS" 2> /dev/null) )
-    local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")"
-    local replace="$(_to_path_head "$1")"
-    \echo "${files[@]/#$pattern/$replace}"
+    \printf '%q' $head
 }
 
