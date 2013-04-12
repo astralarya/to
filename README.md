@@ -68,7 +68,8 @@ The following functionality should either be provided or built in:
 * readlink
 * mkdir
 * rm
-* echo
+* read
+* printf
 * find
 * dirname
 * basename
