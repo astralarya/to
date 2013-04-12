@@ -345,17 +345,12 @@ _to_path_head() {
     \sed -n '1h; 1!H; ${ g; s@^\(\(\\.\|[^/]\)*\)\(/.*\)\?$@\1@p }' <<< "$1"
 }
 
-# clean input for sed search
-_to_regex() {
-    \sed '1h; 1!H; ${ g; s/[\/&]/\\&/g }' <<< "$1"
-}
-
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
     local files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/$IFS" 2> /dev/null) )
-    local pattern="$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")"
-    local replace="$(_to_regex "$(_to_path_head "$1")")"
+    local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")"
+    local replace="$(_to_path_head "$1")"
     \echo "${files[@]/#$pattern/$replace}"
 }
 
@@ -363,8 +358,8 @@ _to_subdirs() {
 # $1 word
 _to_subfiles() {
     local files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f -printf "%p$IFS" 2> /dev/null) )
-    local pattern="$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")"
-    local replace="$(_to_regex "$(_to_path_head "$1")")"
+    local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")"
+    local replace="$(_to_path_head "$1")"
     \echo "${files[@]/#$pattern/$replace}"
 }
 
