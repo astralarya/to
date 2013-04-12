@@ -177,14 +177,17 @@ Options
     # go to bookmark
     for i in "${input[@]}"
     do
-        if [ -d "$TO_BOOKMARK_DIR/$i" ]
+        if [ "$i" ]
         then
-            \cd -P -- "$TO_BOOKMARK_DIR/$i"
-        else
-            \echo "Invalid link: $i"
-            return 1
+            if [ -d "$TO_BOOKMARK_DIR/$i" ]
+            then
+                \cd -P -- "$TO_BOOKMARK_DIR/$i"
+            else
+                \echo "Invalid link: $i"
+                return 1
+            fi
+            return 0
         fi
-        return 0
     done
 }
 
