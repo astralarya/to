@@ -278,15 +278,21 @@ _to() {
         else
             local subfiles
         fi
+        local tosub
         if [ "${#subdirs[@]}" != 0 ]
         then
             # add subdirectories
             compreply+=( ${subdirs[@]} )
-        elif [ "${#subfiles[@]}" != 0 ]
+            tosub="yes"
+        fi
+        if [ "${#subfiles[@]}" != 0 ]
         then
             # add subfiles
             compreply+=( ${subfiles[@]} )
-        else
+            tosub="yes"
+        fi
+        if [ -z "$tosub" ]
+        then
             # get bookmarks (with slash)
             compreply+=( $(_to_bookmarks "/$IFS") )
         fi
@@ -296,8 +302,7 @@ _to() {
     # generate reply 
     for completion in "${compreply[@]}"
     do
-        completion=$(\sed  -n "1h; 1!H; \${ g; s/^$(_to_regex "$word").*/&/p }" <<< "$completion")
-        if [ "$completion" ]
+        if [ -z "${completion/#$word*/}" ]
         then
             filter+=("$completion")
         fi
@@ -337,23 +342,29 @@ _to_bookmarks() {
 
 # get the first part of the path
 _to_path_head() {
-    \sed -n 's@^\(\(\\.\|[^/]\)*\)\(/.*\)\?$@\1@p' <<<"$1"
+    \sed -n '1h; 1!H; ${ g; s@^\(\(\\.\|[^/]\)*\)\(/.*\)\?$@\1@p }' <<< "$1"
 }
 
 # clean input for sed search
 _to_regex() {
-    \sed 's/[\/&]/\\&/g' <<< "$1"
+    \sed '1h; 1!H; ${ g; s/[\/&]/\\&/g }' <<< "$1"
 }
 
 # find the directories that could be subdirectory expansions of
 # $1 word
 _to_subdirs() {
-    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/\n" 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    local files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type d -printf "%p/$IFS" 2> /dev/null) )
+    local pattern="$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")"
+    local replace="$(_to_regex "$(_to_path_head "$1")")"
+    \echo "${files[@]/#$pattern/$replace}"
 }
 
 # find the files that could be subdirectory expansions of
 # $1 word
 _to_subfiles() {
-    \find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f 2> /dev/null | \sed "s/^$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")/$(_to_regex "$(_to_path_head "$1")")/"
+    local files=( $(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${1}0" || \echo /dev/null )")" -mindepth 1 -maxdepth 1 -type f -printf "%p$IFS" 2> /dev/null) )
+    local pattern="$(_to_regex "$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$1")")")"
+    local replace="$(_to_regex "$(_to_path_head "$1")")"
+    \echo "${files[@]/#$pattern/$replace}"
 }
 
