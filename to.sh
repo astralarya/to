@@ -202,7 +202,7 @@ _to() {
     local option
     local state
     local input
-    local inputpos
+    local inputpos=0
     local iter=-1
     for arg in "$@"
     do
@@ -234,11 +234,16 @@ _to() {
         fi
         if [ "$iter" = "$cword" ]
         then
+            echo "yes" >> test
             word=$arg
             inputpos=$input
         fi
         iter="$(\expr $iter + 1)"
     done
+    if [ -z "$word" ]
+    then
+        inputpos="$(\expr $inputpos + 1)"
+    fi
 
     # create empty bookmarks file if it does not exist
     if [ ! -e "$TO_BOOKMARK_DIR" ]
@@ -250,58 +255,67 @@ _to() {
     local compreply
     if [ "$option" = "-b" ]
     then
+        echo "$word $inputpos" >> test
         if [ "$inputpos" = 1 ]
         then
             # add current directory
-            compreply="$(\basename -- "$PWD" )"$'\n'"$compreply"
+            compreply+=("$(\basename -- "$PWD" )")
             # get bookmarks
-            compreply="$(_to_bookmarks)"$'\n'"$compreply"
+            compreply+=( $(_to_bookmarks "$IFS") )
         elif [ "$inputpos" = 2 ]
         then
             # normal file completion
             word="${word/#-/./-}"
-            compreply="$(\find "$(\dirname -- "${word}0")" -mindepth 1 -maxdepth 1 -type d 2> /dev/null)"
+            compreply+=( $(\find "$(\dirname -- "${word}0")" -mindepth 1 -maxdepth 1 -type d -printf "%p$IFS" 2> /dev/null) )
         fi
     elif [ "$option" = "-r" ]
     then
         # get bookmarks
-        compreply="$(_to_bookmarks)"$'\n'"$compreply"
+        compreply+=( $(_to_bookmarks "$IFS") )
     else
-        local subdirs="$(_to_subdirs "$word")"
+        local subdirs=( $(_to_subdirs "$word") )
         if [ "$option" = "-p" ]
         then
-            local subfiles="$(_to_subfiles "$word")"
+            local subfiles=( $(_to_subfiles "$word") )
         else
-            local subfiles=""
+            local subfiles
         fi
-        if [ "$subdirs" -o "$subfiles" ]
+        if [ "${#subdirs[@]}" != 0 ]
         then
             # add subdirectories
-            compreply="$subdirs"$'\n'"$compreply"
+            compreply+=( ${subdirs[@]} )
+        elif [ "${#subfiles[@]}" != 0 ]
+        then
             # add subfiles
-            compreply="$subfiles"$'\n'"$compreply"
+            compreply+=( ${subfiles[@]} )
         else
             # get bookmarks (with slash)
-            compreply="$(_to_bookmarks "/")"$'\n'"$compreply"
+            compreply+=( $(_to_bookmarks "/$IFS") )
         fi
     fi
+
+    local filter
     # generate reply 
-    \sed -n "/^$(_to_regex "$word").*/p" <<< "$compreply"
+    for completion in "${compreply[@]}"
+    do
+        completion=$(\sed  -n "1h; 1!H; \${ g; s/^$(_to_regex "$word").*/&/p }" <<< "$completion")
+        if [ "$completion" ]
+        then
+            filter+=("$completion")
+        fi
+    done
+    echo "${filter[@]}"
 }
 
 # tab completion bash
 _to_bash() {
     # call generic tab completion function
-    local IFS='
-'
     COMPREPLY=( $(_to "$COMP_CWORD" ${COMP_WORDS[@]}) )
 }
 
 # tab completion zsh
 _to_zsh() {
     # call generic tab completion function
-    local IFS='
-'
     COMPREPLY=( $(_to "$COMP_CWORD" ${COMP_WORDS[@]}) )
 }
 
@@ -320,7 +334,7 @@ fi
 # Return list of bookmarks in $TO_BOOKMARK_FILE
 # $1 suffix
 _to_bookmarks() {
-    \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f$1\n"
+    \find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf "%f$1"
 }
 
 # get the first part of the path
