@@ -80,14 +80,15 @@ Options
         do
             if [ "$i" ]
             then
-                response+=" $(\readlink -f -- "$TO_BOOKMARK_DIR/$i")"
+                response+=( $(\readlink -f -- "$TO_BOOKMARK_DIR/$i") )
                 if [ $? != 0 ]
                 then
                     good="bad"
                 fi
             fi
         done
-        \printf '%q\n' $response
+        \printf '%q ' ${response[@]}
+        \printf '\n'
         if [ "$good" != "good" ]
         then
             return 1
@@ -199,7 +200,7 @@ Options
 # $2-n = words
 # Output valid completions
 _to() {
-    local IFS=$'\000'
+    local IFS=$'\0'
     # read arguments
     local word
     local cword
@@ -306,13 +307,19 @@ _to() {
             subfiles=( ${subfiles[@]//$'\n'/\\$'\n'} )
         fi
         local tosub
-        if [ "${#subdirs[@]}" != 0 ]
+        if [ "$ZSH_VERSION" ]
+        then
+            local bound=1
+        else
+            local bound=0
+        fi
+        if [ "${#subdirs[@]}" -gt "$bound" ]
         then
             # add subdirectories
             compreply+=( ${subdirs[@]} )
             tosub="yes"
         fi
-        if [ "${#subfiles[@]}" != 0 ]
+        if [ "${#subfiles[@]}" -gt "$bound" ]
         then
             # add subfiles
             compreply+=( ${subfiles[@]} )
