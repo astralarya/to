@@ -264,7 +264,7 @@ _to() {
         then
             # normal file completion
             word="${word/#-/./-}"
-            compreply+=( $(\find "$(\dirname -- "${word}0")" -mindepth 1 -maxdepth 1 -type d -printf "%p$IFS" 2> /dev/null) )
+            compreply+=( $(\find "$(\dirname -- "${word}0")" -mindepth 1 -maxdepth 1 -type d -printf "%p/$IFS" 2> /dev/null) )
         fi
     elif [ "$option" = "-r" ]
     then
@@ -343,11 +343,11 @@ _to_bookmarks() {
 # get the first part of the path
 _to_path_head() {
     local IFS="/"
-    local path=( $1 )
-    local head=$path
+    local target=( $1 )
+    local head=$target
     local prev
     local first
-    for part in "${path[@]}"
+    for part in "${target[@]}"
     do
         if [ "$prev" != "${prev%\\}" ]
         then
