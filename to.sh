@@ -236,8 +236,8 @@ _to() {
         fi
         if [ "$iter" = "$cword" ]
         then
-            word=$arg
-            inputpos=$input
+            word="$arg"
+            inputpos="$input"
         fi
         iter=$(\expr $iter + 1)
     done
@@ -338,11 +338,14 @@ _to() {
 
     # clean completions
     compreply=( ${compreply[@]//$'\n'/\\$'\n'} )
+    # clean word
+    word="${word/%\\}"
+    word="$(\eval '\printf' '%b' "$word")"
     # generate reply 
     local filter
     for completion in "${compreply[@]}"
     do
-        if [ -z "${completion/#$word*/}" ]
+        if [ -z "${completion/#$word*}" ]
         then
             filter+=("$completion")
         fi
@@ -353,7 +356,7 @@ _to() {
 # tab completion bash
 _to_bash() {
     # call generic tab completion function
-    _to "$COMP_CWORD" ${COMP_WORDS[@]}
+    _to "$COMP_CWORD" "${COMP_WORDS[@]}"
 }
 
 # setup tab completion
