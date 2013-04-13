@@ -357,10 +357,6 @@ _to() {
 _to_bash() {
     # call generic tab completion function
     _to "$COMP_CWORD" "${COMP_WORDS[@]}"
-   for completion in "${COMPREPLY[@]}"
-   do
-      echo "$completion" >> test
-   done
 }
 
 # setup tab completion
