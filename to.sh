@@ -88,7 +88,7 @@ Options
                 fi
             fi
         done
-        \printf '%q ' ${response[@]}
+        \printf '%q ' "${response[@]}"
         \printf '\n'
         if [ "$good" != "good" ]
         then
@@ -108,7 +108,7 @@ Options
         if [ "${#input[@]}" -gt "$bound" ]
         then
             local target="${input[-1]}"
-            local end=${#input[@]}-1
+            local end="${#input[@]}-1"
             if [ -d "$target" ]
             then
                 local target="$(\readlink -e -- "$target")"
@@ -118,7 +118,7 @@ Options
             fi
         else
             local target="$PWD"
-            local end=${#input[@]}
+            local end="${#input[@]}"
         fi
         # add bookmarks
         local good="good"
@@ -269,7 +269,7 @@ _to() {
             do
                 bookmarks+=($bookmark)
             done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
-            compreply+=( ${bookmarks[@]} )
+            compreply+=( "${bookmarks[@]}" )
         elif [ "$inputpos" = 2 ]
         then
             # normal file completion
@@ -284,7 +284,7 @@ _to() {
         do
             bookmarks+=($bookmark)
         done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
-        compreply+=( ${bookmarks[@]} )
+        compreply+=( "${bookmarks[@]}" )
     else
         local subdirs
         local subfiles
@@ -295,8 +295,8 @@ _to() {
         done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type d -print0 2> /dev/null)
         local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
         local replace="$(_to_path_head "$word")"
-        subdirs=( ${subdirs[@]/%/\/} )
-        subdirs=( ${subdirs[@]/#$pattern/$replace} )
+        subdirs=( "${subdirs[@]/%//}" )
+        subdirs=( "${subdirs[@]/#$pattern/$replace}" )
         if [ "$option" = "-p" ]
         then
             # get subfiles
@@ -306,7 +306,7 @@ _to() {
             done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
             local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
             local replace="$(_to_path_head "$word")"
-            subfiles=( ${subfiles[@]/#$pattern/$replace} )
+            subfiles=( "${subfiles[@]/#$pattern/$replace}" )
         fi
         local tosub
         if [ "$ZSH_VERSION" ]
@@ -318,13 +318,13 @@ _to() {
         if [ "${#subdirs[@]}" -gt "$bound" ]
         then
             # add subdirectories
-            compreply+=( ${subdirs[@]} )
+            compreply+=( "${subdirs[@]}" )
             tosub="yes"
         fi
         if [ "${#subfiles[@]}" -gt "$bound" ]
         then
             # add subfiles
-            compreply+=( ${subfiles[@]} )
+            compreply+=( "${subfiles[@]}" )
             tosub="yes"
         fi
         if [ -z "$tosub" ]
@@ -335,12 +335,12 @@ _to() {
             do
                 bookmarks+=($bookmark)
             done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f/\0')
-            compreply+=( ${bookmarks[@]} )
+            compreply+=( "${bookmarks[@]}" )
         fi
     fi
 
     # clean completions
-    compreply=( ${compreply[@]//$'\n'/\\$'\n'} )
+    compreply=( "${compreply[@]//$'\n'/\\$'\n'}" )
     # generate reply 
     local filter
     for completion in "${compreply[@]}"
@@ -350,7 +350,7 @@ _to() {
             filter+=("$completion")
         fi
     done
-    COMPREPLY=( ${filter[@]} )
+    COMPREPLY=( "${filter[@]}" )
 }
 
 # tab completion bash
