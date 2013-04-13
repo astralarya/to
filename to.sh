@@ -259,6 +259,7 @@ _to() {
     then
         return 1
     fi
+
     # build reply
     local compreply
     if [ "$option" = "-b" ]
@@ -290,9 +291,8 @@ _to() {
         done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
         compreply+=( "${bookmarks[@]}" )
     else
-        local subdirs
-        local subfiles
         # get subdirs
+        local subdirs
         while read -r -d '' file
         do
             subdirs+=($file)
@@ -301,9 +301,11 @@ _to() {
         local replace="$(_to_path_head "$word")"
         subdirs=( "${subdirs[@]/%//}" )
         subdirs=( "${subdirs[@]/#$pattern/$replace}" )
+
+        # get subfiles
+        local subfiles
         if [ "$option" = "-p" ]
         then
-            # get subfiles
             while read -r -d '' file
             do
                 subfiles+=($file)
