@@ -215,7 +215,7 @@ _to() {
         if [ -z "$cword" ]
         then
             # get first argument
-            cword=$arg
+            cword="$arg"
         elif [ "$state" = "input" ]
         then
             input=$(\expr $input + 1)
@@ -267,7 +267,7 @@ _to() {
             local bookmarks
             while read -r -d '' bookmark
             do
-                bookmarks+=($bookmark)
+                bookmarks+=( "$bookmark" )
             done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
             compreply+=( "${bookmarks[@]}" )
         elif [ "$inputpos" = 2 ]
@@ -339,8 +339,6 @@ _to() {
         fi
     fi
 
-    # clean completions
-    compreply=( "${compreply[@]//$'\n'/\\$'\n'}" )
     # generate reply 
     local filter
     for completion in "${compreply[@]}"
@@ -389,7 +387,7 @@ _to_path_head() {
         local IFS="/"
         local target=( $1 )
     fi
-    local head=$target
+    local head="$target"
     local prev
     local first
     for part in "${target[@]}"
@@ -403,8 +401,8 @@ _to_path_head() {
         else
             break
         fi
-        prev=$part
+        prev="$part"
     done
-    \printf '%q' $head
+    \printf '%q' "$head"
 }
 
