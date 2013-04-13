@@ -363,7 +363,7 @@ _to_bash() {
 _to_zsh() {
     # call generic tab completion function
     _to "$COMP_CWORD" "${COMP_WORDS[@]}"
-    COMPREPLY=( "${COMPREPLY[@]// /\\ }" )
+    COMPREPLY=( "${(q)COMPREPLY[@]}" )
 }
 
 # setup tab completion
