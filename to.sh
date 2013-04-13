@@ -232,18 +232,18 @@ _to() {
                 option="$arg"
             fi
         else
-            input=$(\expr $input + 1)
+            input="$(\expr "$input" + 1)"
         fi
         if [ "$iter" = "$cword" ]
         then
             word="$arg"
             inputpos="$input"
         fi
-        iter=$(\expr $iter + 1)
+        iter="$(\expr "$iter" + 1)"
     done
     if [ -z "$word" ]
     then
-        inputpos=$(\expr $inputpos + 1)
+        inputpos="$(\expr "$inputpos" + 1)"
     fi
 
     # create empty bookmarks file if it does not exist
@@ -264,7 +264,7 @@ _to() {
     local compreply
     if [ "$option" = "-b" ]
     then
-        if [ "$inputpos" = 1 ]
+        if [ "$inputpos" -ge 1 ]
         then
             # add current directory
             compreply+=("$(\basename -- "$PWD" )")
@@ -275,7 +275,8 @@ _to() {
                 bookmarks+=( "$bookmark" )
             done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
             compreply+=( "${bookmarks[@]}" )
-        elif [ "$inputpos" = 2 ]
+        fi
+        if [ "$inputpos" -ge 2 ]
         then
             # normal file completion
             word="${word/#-/./-}"
