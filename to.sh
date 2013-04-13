@@ -252,6 +252,9 @@ _to() {
         \mkdir -pv -- "$TO_BOOKMARK_DIR"
     fi
 
+    # clean word
+    word="${word/%\\}"
+    word="$(\eval '\printf' '%b' "$word")"
     # build reply
     local compreply
     if [ "$option" = "-b" ]
@@ -338,9 +341,6 @@ _to() {
 
     # clean completions
     compreply=( ${compreply[@]//$'\n'/\\$'\n'} )
-    # clean word
-    word="${word/%\\}"
-    word="$(\eval '\printf' '%b' "$word")"
     # generate reply 
     local filter
     for completion in "${compreply[@]}"
@@ -357,6 +357,10 @@ _to() {
 _to_bash() {
     # call generic tab completion function
     _to "$COMP_CWORD" "${COMP_WORDS[@]}"
+   for completion in "${COMPREPLY[@]}"
+   do
+      echo "$completion" >> test
+   done
 }
 
 # setup tab completion
