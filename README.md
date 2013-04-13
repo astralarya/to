@@ -76,7 +76,7 @@ The following functionality should either be provided or built in:
 
 ## License
 
-to - v1.4.1
+to - v1.4.2
 
 Copyright (C) 2013  Mara Kim, Philipp Adolf, Max Thrun
 
