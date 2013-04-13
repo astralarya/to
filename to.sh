@@ -253,7 +253,6 @@ _to() {
     fi
 
     # clean word
-    word="${word/%\\}"
     word="$(\eval '\printf' '%b' "$word")"
     # build reply
     local compreply
@@ -304,8 +303,6 @@ _to() {
             do
                 subfiles+=($file)
             done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
-            local pattern="$(\readlink -f -- "$TO_BOOKMARK_DIR/$(_to_path_head "$word")")"
-            local replace="$(_to_path_head "$word")"
             subfiles=( "${subfiles[@]/#$pattern/$replace}" )
         fi
         local tosub
