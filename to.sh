@@ -253,7 +253,12 @@ _to() {
     fi
 
     # clean word
-    word="$(\eval '\printf' '%b' "$word")"
+    word="$(\eval '\printf' '%b' "$word" 2> /dev/null)"
+    local stat="$?"
+    if [ "$stat" != 0 ]
+    then
+        return 1
+    fi
     # build reply
     local compreply
     if [ "$option" = "-b" ]
