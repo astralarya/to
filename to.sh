@@ -359,11 +359,18 @@ _to_bash() {
     _to "$COMP_CWORD" "${COMP_WORDS[@]}"
 }
 
+# tab completion zsh
+_to_zsh() {
+    # call generic tab completion function
+    _to "$COMP_CWORD" "${COMP_WORDS[@]}"
+    COMPREPLY=( "${COMPREPLY[@]// /\\ }" )
+}
+
 # setup tab completion
 if [ "$ZSH_VERSION" ]
 then
     \autoload -U +X bashcompinit && \bashcompinit
-    \complete -o nospace -F _to_bash to
+    \complete -o nospace -F _to_zsh to
 else
     \complete -o filenames -o nospace -F _to_bash to
 fi
