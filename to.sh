@@ -408,6 +408,6 @@ _to_path_head() {
         fi
         prev="$part"
     done
-    \printf '%q' "$head"
+    \printf '%b' "$head"
 }
 
