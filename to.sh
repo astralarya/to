@@ -218,7 +218,7 @@ _to() {
             cword="$arg"
         elif [ "$state" = "input" ]
         then
-            input=$(\expr $input + 1)
+            input="$(\expr "$input" + 1)"
         elif [ "$arg" = "-h" -o "$arg" = "--help" ]
         then
             return 0
