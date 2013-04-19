@@ -48,7 +48,7 @@ Options
         elif [ "$arg" = "--" ]
         then
             state="input"
-        elif [ "$arg" = "-b" -o "$arg" = "-r" -o "$arg" = "-p" ]
+        elif [ -z "${arg/-*/}" ]
         then
             if [ ! "$option" ]
             then
@@ -225,7 +225,7 @@ _to() {
         elif [ "$arg" = "--" ]
         then
             state="input"
-        elif [ "$arg" = "-b" -o "$arg" = "-r" -o "$arg" = "-p" ]
+        elif [ -z "${arg/-*/}" ]
         then
             if [ ! "$option" ]
             then
