@@ -313,7 +313,6 @@ _to() {
             done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
             subfiles=( "${subfiles[@]/#$pattern/$replace}" )
         fi
-        local tosub
         if [ "$ZSH_VERSION" ]
         then
             local bound=1
@@ -324,31 +323,26 @@ _to() {
         then
             # add subdirectories
             compreply+=( "${subdirs[@]}" )
-            tosub="yes"
         fi
         if [ "${#subfiles[@]}" -gt "$bound" ]
         then
             # add subfiles
             compreply+=( "${subfiles[@]}" )
-            tosub="yes"
         fi
-        if [ -z "$tosub" ]
-        then
-            # get bookmarks (with slash)
-            local bookmarks
-            while read -r -d '' bookmark
-            do
-                bookmarks+=($bookmark)
-            done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f/\0')
-            compreply+=( "${bookmarks[@]}" )
-        fi
+        # get bookmarks (with slash)
+        local bookmarks
+        while read -r -d '' bookmark
+        do
+            bookmarks+=($bookmark)
+        done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f/\0')
+        compreply+=( "${bookmarks[@]}" )
     fi
 
     # generate reply 
     local filter
     for completion in "${compreply[@]}"
     do
-        if [ -z "${completion/#$word*}" ]
+        if [ -z "${completion/#$word*}" -a "${completion/#$word}" ]
         then
             filter+=("$completion")
         fi
