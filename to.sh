@@ -302,6 +302,7 @@ _to() {
         local replace="$(_to_path_head "$word")"
         subdirs=( "${subdirs[@]/%//}" )
         subdirs=( "${subdirs[@]/#$pattern/$replace}" )
+        compreply+=( "${subdirs[@]}" )
 
         # get subfiles
         local subfiles
@@ -313,22 +314,8 @@ _to() {
             done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
             subfiles=( "${subfiles[@]/#$pattern/$replace}" )
         fi
-        if [ "$ZSH_VERSION" ]
-        then
-            local bound=1
-        else
-            local bound=0
-        fi
-        if [ "${#subdirs[@]}" -gt "$bound" ]
-        then
-            # add subdirectories
-            compreply+=( "${subdirs[@]}" )
-        fi
-        if [ "${#subfiles[@]}" -gt "$bound" ]
-        then
-            # add subfiles
-            compreply+=( "${subfiles[@]}" )
-        fi
+        compreply+=( "${subfiles[@]}" )
+
         # get bookmarks (with slash)
         local bookmarks
         while read -r -d '' bookmark
