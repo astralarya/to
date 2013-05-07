@@ -108,7 +108,12 @@ Options
         if [ "${#input[@]}" -gt "$bound" ]
         then
             local end="${#input[@]}-1"
-            local target="${input[$end]}"
+            if [ "$ZSH_VERSION" ]
+            then
+                local target="${input[-1]}"
+            else
+                local target="${input[$end]}"
+            fi
             if [ -d "$target" ]
             then
                 local target="$(\readlink -e -- "$target")"
