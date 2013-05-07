@@ -107,8 +107,8 @@ Options
         # get target
         if [ "${#input[@]}" -gt "$bound" ]
         then
-            local target="${input[-1]}"
             local end="${#input[@]}-1"
+            local target="${input[$end]}"
             if [ -d "$target" ]
             then
                 local target="$(\readlink -e -- "$target")"
