@@ -67,7 +67,7 @@ Options
         \mkdir -pv -- "$TO_BOOKMARK_DIR"
     fi
 
-    if [ -z "$option" -a "${#input[@]}" = 0 ]
+    if [ -z "$option" -a "${input[*]}" = "" ]
     then
         # show bookmarks
         \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf '%f -> %l\n'
