@@ -122,7 +122,7 @@ Options
         fi
         # add bookmarks
         local good="good"
-        if [ "${#input[@]}" -lt "$bound" ]
+        if [ "${input[*]}" = "" ]
         then
             local name="$(\basename -- "$PWD")"
             # create link (symbolic force no-dereference Target)
