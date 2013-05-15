@@ -275,7 +275,7 @@ _to() {
             compreply+=("$(\basename -- "$PWD" )")
             # get bookmarks
             local bookmarks
-            while read -r -d '' bookmark
+            while \read -r -d '' bookmark
             do
                 bookmarks+=( "$bookmark" )
             done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
@@ -291,7 +291,7 @@ _to() {
     then
         # get bookmarks
         local bookmarks
-        while read -r -d '' bookmark
+        while \read -r -d '' bookmark
         do
             bookmarks+=($bookmark)
         done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f\0')
@@ -299,7 +299,7 @@ _to() {
     else
         # get subdirs
         local subdirs
-        while read -r -d '' file
+        while \read -r -d '' file
         do
             subdirs+=($file)
         done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type d -print0 2> /dev/null)
@@ -313,7 +313,7 @@ _to() {
         local subfiles
         if [ "$option" = "-p" ]
         then
-            while read -r -d '' file
+            while \read -r -d '' file
             do
                 subfiles+=($file)
             done < <(\find "$(\dirname -- "$(\readlink -f -- "$TO_BOOKMARK_DIR/${word}0" || \printf '/dev/null' )")" -mindepth 1 -maxdepth 1 -type f -print0 2> /dev/null)
@@ -323,7 +323,7 @@ _to() {
 
         # get bookmarks (with slash)
         local bookmarks
-        while read -r -d '' bookmark
+        while \read -r -d '' bookmark
         do
             bookmarks+=($bookmark)
         done < <(\find "$TO_BOOKMARK_DIR" -mindepth 1 -maxdepth 1 -type l -printf '%f/\0')
