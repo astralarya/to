@@ -17,10 +17,10 @@ This script supports several operating systems.  For more details see https://gi
 to [OPTION] [BOOKMARK] [DEST]
 
 Options
-* -b	Add a new bookmark for current directory (overwrites any current bookmark)
-* -r	Remove bookmark
-* -p	Print bookmark path
-* -h	Show help
+* __-b__ : Add a new bookmark for current directory (overwrites any current bookmark)
+* __-r__ : Remove bookmark
+* __-p__ : Print bookmark path
+* __-h__ : Show help
 
 Other than -h, only the first option given is ever used.
 
