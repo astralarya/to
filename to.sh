@@ -342,6 +342,9 @@ _to() {
     COMPREPLY=( "${filter[@]}" )
 }
 
+# teleport alias
+alias tp="to -p"
+
 # tab completion bash
 _to_bash() {
     # call generic tab completion function
@@ -355,13 +358,16 @@ _to_zsh() {
     COMPREPLY=( "${(q)COMPREPLY[@]}" )
 }
 
+
 # setup tab completion
 if [ "$ZSH_VERSION" ]
 then
     \autoload -U +X bashcompinit && \bashcompinit
     \complete -o nospace -F _to_zsh to
+    \complete -o nospace -F _to_zsh tp
 else
     \complete -o filenames -o nospace -F _to_bash to
+    \complete -o filenames -o nospace -F _to_bash tp
 fi
 
 
