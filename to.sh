@@ -19,7 +19,10 @@
 
 ### SETTINGS ###
 
-TO_BOOKMARK_DIR=~/.bookmarks
+if [ -z "$TO_BOOKMARK_DIR" ]
+then
+    TO_BOOKMARK_DIR=~/.bookmarks
+fi
 
 ### MAIN ###
 to() {
