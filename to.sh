@@ -354,10 +354,23 @@ _to_bash() {
     _to "$COMP_CWORD" "${COMP_WORDS[@]}"
 }
 
+_tp_bash() {
+    COMP_CWORD="$(expr $COMP_CWORD + 1)"
+    # call generic tab completion function
+    _to "$COMP_CWORD" -p "${COMP_WORDS[@]}"
+}
+
 # tab completion zsh
 _to_zsh() {
     # call generic tab completion function
     _to "$COMP_CWORD" "${COMP_WORDS[@]}"
+    COMPREPLY=( "${(q)COMPREPLY[@]}" )
+}
+
+_to_zsh() {
+    COMP_CWORD="$(expr $COMP_CWORD + 1)"
+    # call generic tab completion function
+    _to "$COMP_CWORD" -p "${COMP_WORDS[@]}"
     COMPREPLY=( "${(q)COMPREPLY[@]}" )
 }
 
@@ -367,10 +380,10 @@ if [ "$ZSH_VERSION" ]
 then
     \autoload -U +X bashcompinit && \bashcompinit
     \complete -o nospace -F _to_zsh to
-    \complete -o nospace -F _to_zsh tp
+    \complete -o nospace -F _tp_zsh tp
 else
     \complete -o filenames -o nospace -F _to_bash to
-    \complete -o filenames -o nospace -F _to_bash tp
+    \complete -o filenames -o nospace -F _tp_bash tp
 fi
 
 
