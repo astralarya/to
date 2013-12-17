@@ -84,7 +84,7 @@ Options
         do
             if [ "$i" ]
             then
-                response+=( $(\readlink -f -- "$TO_BOOKMARK_DIR/$i") )
+                response+=( "$(\readlink -f -- "$TO_BOOKMARK_DIR/$i")" )
                 if [ $? != 0 ]
                 then
                     good="bad"
