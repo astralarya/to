@@ -367,7 +367,7 @@ _to_zsh() {
     COMPREPLY=( "${(q)COMPREPLY[@]}" )
 }
 
-_to_zsh() {
+_tp_zsh() {
     COMP_CWORD="$(expr $COMP_CWORD + 1)"
     # call generic tab completion function
     _to "$COMP_CWORD" -p "${COMP_WORDS[@]}"
