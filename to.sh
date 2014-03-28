@@ -73,7 +73,7 @@ Options
     if [ -z "$option" -a "${input[*]}" = "" ]
     then
         # show bookmarks
-        tree --noreport -C "$TO_BOOKMARK_DIR"
+        tree --noreport -C "$TO_BOOKMARK_DIR" | tail -n+2
         return 0
     elif [ "$option" = "-p" ]
     then
