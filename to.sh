@@ -172,12 +172,12 @@ Options
         do
             if [ "$i" ]
             then
-                if [ "$i" = "$(_to_path_head "$i")" -a -h "$TO_BOOKMARK_DIR/$i" ]
+                if [ "${i%/}" = "$(_to_path_head "$i")" -a -h "$TO_BOOKMARK_DIR/${i%/}" ]
                 then
                     # remove bookmark
-                    \rm -- "$TO_BOOKMARK_DIR/$i"
+                    \rm -- "$TO_BOOKMARK_DIR/${i%/}"
                 else
-                    \printf 'No bookmark: %q\n' "$i"
+                    \printf 'No bookmark: %q\n' "${i%/}"
                 fi
             fi
         done
