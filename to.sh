@@ -73,7 +73,7 @@ Options
     if [ -z "$option" -a "${input[*]}" = "" ]
     then
         # show bookmarks
-        \find "$TO_BOOKMARK_DIR" -mindepth 1 -type l -printf '%f -> %l\n'
+        tree --noreport -C "$TO_BOOKMARK_DIR"
         return 0
     elif [ "$option" = "-p" ]
     then
