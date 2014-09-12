@@ -134,7 +134,7 @@ Options
         then
             local name="$(\basename -- "$PWD")"
             # create link (symbolic force no-dereference Target)
-            \ln -sfnT "$target" -- "$TO_BOOKMARK_DIR/$name"
+            ln -sf "$target" -- "$TO_BOOKMARK_DIR/$name"
         else
             for i in "${input[@]:0:$end}"
             do
@@ -156,7 +156,7 @@ Options
                         continue
                     fi
                     # create link (symbolic force no-dereference Target)
-                    \ln -sfnT "$target" -- "$TO_BOOKMARK_DIR/$name"
+                    ln -sf "$target" -- "$TO_BOOKMARK_DIR/$name"
                 fi
             done
         fi
